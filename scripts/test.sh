@@ -95,6 +95,11 @@ assert_contains public/san-pham/chai-pet-500ml/index.html "Liên hệ" "unpriced
 assert_not_contains public/san-pham/chai-pet-500ml/index.html "0 ₫" "unpriced product does not render a zero price"
 assert_contains public/san-pham/index.html "Liên hệ" "grid card shows Liên hệ for unpriced products"
 
+assets_css=$(ls public/css/main.min.*.css 2>/dev/null | head -1)
+assert_matches "$assets_css" 'grid-template-columns: *repeat\(3, *1fr\)' "grid is three columns"
+assert_file public/san-pham/page/2/index.html "pagination generates a second page"
+assert_contains public/san-pham/index.html "catalogue-main" "grid page uses the catalogue layout"
+
 echo
 if [ "$FAIL" -eq 0 ]; then
   printf '\033[32mALL PASS\033[0m\n'

@@ -26,10 +26,29 @@ a { color: inherit; }
 }
 .site-header nav a { margin-left: 1.25rem; text-decoration: none; }
 .site-header nav a:hover { text-decoration: underline; }
-.grid {
-  display: grid; gap: 2rem;
-  grid-template-columns: repeat(auto-fill, minmax(17rem, 1fr));
-  padding: 2rem 0;
+.catalogue { display: grid; grid-template-columns: 15rem 1fr; gap: 2.5rem; align-items: start; padding: 2rem 0; }
+.grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; }
+.sidebar h2 { font-size: 1rem; margin: 0 0 0.75rem; }
+.sidebar ul { list-style: none; margin: 0; padding: 0; }
+.sidebar li { margin: 0 0 0.5rem; }
+.sidebar a { text-decoration: none; font-size: 0.95rem; }
+.sidebar a:hover { text-decoration: underline; }
+.sidebar .count { color: var(--muted); font-size: 0.85rem; }
+.price { display: block; font-weight: 600; margin-top: 0.25rem; }
+.price-contact { color: var(--muted); font-weight: 500; }
+.specs { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.5rem 1.5rem; margin: 1.5rem 0; }
+.specs dt { color: var(--muted); font-size: 0.85rem; }
+.specs dd { margin: 0; }
+.pagination { display: flex; gap: 0.5rem; list-style: none; padding: 2rem 0 0; }
+.pagination a, .pagination span { padding: 0.4rem 0.75rem; border: 1px solid var(--rule); border-radius: 4px; text-decoration: none; }
+.pagination .active a { background: var(--ink); color: var(--bg); }
+
+@media (max-width: 60rem) {
+  .catalogue { grid-template-columns: 1fr; }
+  .grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 34rem) {
+  .grid { grid-template-columns: 1fr; }
 }
 .card h2 { font-size: 1.05rem; margin: 0.75rem 0 0.25rem; }
 .card p { color: var(--muted); margin: 0; font-size: 0.925rem; }

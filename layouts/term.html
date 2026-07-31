@@ -4,10 +4,12 @@
   <div class="catalogue-main">
     <h1>{{ $term := .Data.Term }}{{ range hugo.Data.danhmuc }}{{ if eq .slug $term }}{{ .label }}{{ end }}{{ end }}</h1>
     <div class="grid">
-      {{- range .Pages }}
-        {{ partial "project-card.html" . }}
+      {{- $paginator := .Paginate .Pages }}
+      {{- range $paginator.Pages }}
+        {{ partial "product-card.html" . }}
       {{- end }}
     </div>
+    {{ template "_internal/pagination.html" . }}
   </div>
 </div>
 {{ end }}

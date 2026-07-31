@@ -12,3 +12,6 @@ enableRobotsTXT = true
 
 [minify]
   disableHTML = false
+
+[pagination]
+  pagerSize = 12
