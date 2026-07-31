@@ -54,31 +54,31 @@ assert_matches public/index.html '\.webp' "image partial converts to WebP"
 assert_matches public/index.html 'width=.?[0-9]+.? height=.?[0-9]+' "image partial emits intrinsic dimensions"
 assert_contains public/index.html 'decoding=async' "image partial sets async decoding"
 
-assert_file public/projects/index.html "projects grid is generated"
-assert_contains public/projects/index.html "Demo Project" "grid lists the demo project"
-assert_contains public/projects/index.html "A short summary" "grid renders the summary"
-assert_file public/projects/demo-project/index.html "project detail page is generated"
-assert_contains public/projects/demo-project/index.html "Acme Corp" "detail renders the client field"
-assert_matches public/projects/demo-project/index.html '<dt>Year</dt><dd>[0-9]{4}</dd>' "detail renders the year field"
-assert_matches public/projects/demo-project/index.html 'rel=.?noopener' "external link is rel-protected"
-assert_contains public/projects/demo-project/index.html "A caption" "detail renders gallery captions"
-assert_matches public/projects/demo-project/index.html 'width=.?300.? height=.?168' "image partial does not upscale a sub-800px source (regression)"
-assert_no_draft() { if [ -d public/projects/hidden-draft ]; then fail "draft project is excluded from build"; else pass "draft project is excluded from build"; fi; }
+assert_file public/san-pham/index.html "projects grid is generated"
+assert_contains public/san-pham/index.html "Demo Project" "grid lists the demo project"
+assert_contains public/san-pham/index.html "A short summary" "grid renders the summary"
+assert_file public/san-pham/demo-project/index.html "project detail page is generated"
+assert_contains public/san-pham/demo-project/index.html "Acme Corp" "detail renders the client field"
+assert_matches public/san-pham/demo-project/index.html '<dt>Year</dt><dd>[0-9]{4}</dd>' "detail renders the year field"
+assert_matches public/san-pham/demo-project/index.html 'rel=.?noopener' "external link is rel-protected"
+assert_contains public/san-pham/demo-project/index.html "A caption" "detail renders gallery captions"
+assert_matches public/san-pham/demo-project/index.html 'width=.?300.? height=.?168' "image partial does not upscale a sub-800px source (regression)"
+assert_no_draft() { if [ -d public/san-pham/hidden-draft ]; then fail "draft project is excluded from build"; else pass "draft project is excluded from build"; fi; }
 assert_no_draft
 
 assert_file public/tags/index.html "tag index page is generated"
 assert_file public/tags/branding/index.html "tag term page is generated"
 assert_contains public/tags/branding/index.html "Demo Project" "term page lists tagged projects"
-assert_contains public/projects/index.html "/tags/branding/" "grid card links to tag pages"
+assert_contains public/san-pham/index.html "/tags/branding/" "grid card links to tag pages"
 
-assert_file public/about/index.html "about page is generated"
-assert_contains public/about/index.html "About" "about page renders its title"
-assert_contains public/about/index.html "studio based in" "about page renders body content"
+assert_file public/gioi-thieu/index.html "about page is generated"
+assert_contains public/gioi-thieu/index.html "About" "about page renders its title"
+assert_contains public/gioi-thieu/index.html "studio based in" "about page renders body content"
 
-# --- CMS-field-wins regression (content/about has portrait: "" AND a portrait.jpg
+# --- CMS-field-wins regression (content/gioi-thieu has portrait: "" AND a portrait.jpg
 # sitting in its bundle; an empty/absent field must win over any glob fallback) ---
-assert_not_contains public/about/index.html "<img" "empty portrait field renders no image, even though content/about/portrait.jpg exists in the bundle"
-assert_file content/about/portrait.jpg "regression fixture: portrait.jpg is present in the about bundle"
+assert_not_contains public/gioi-thieu/index.html "<img" "empty portrait field renders no image, even though content/gioi-thieu/portrait.jpg exists in the bundle"
+assert_file content/gioi-thieu/portrait.jpg "regression fixture: portrait.jpg is present in the about bundle"
 
 assert_file public/admin/index.html "admin page is published"
 assert_file public/admin/config.yml "admin config is published"

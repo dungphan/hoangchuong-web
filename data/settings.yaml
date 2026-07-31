@@ -4,9 +4,9 @@ og_image: ""
 contact_email: hello@example.com
 nav:
   - label: Projects
-    url: /projects/
+    url: /san-pham/
   - label: About
-    url: /about/
+    url: /gioi-thieu/
 social:
   - platform: GitHub
     url: https://github.com/
