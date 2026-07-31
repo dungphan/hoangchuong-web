@@ -177,7 +177,7 @@ Append to `scripts/test.sh`:
 
 ```bash
 assert_contains public/san-pham/demo-project/index.html "125.000" "priced product renders a formatted price"
-assert_contains public/san-pham/demo-project/index.html "PET" "detail renders the material"
+assert_contains public/san-pham/demo-project/index.html "<dt>Chất liệu</dt><dd>PET" "detail renders the material"
 assert_contains public/san-pham/demo-project/index.html "24/410" "detail renders the neck size"
 assert_contains public/san-pham/demo-project/index.html "500ml" "detail renders the capacity"
 assert_contains public/san-pham/demo-project/index.html "HD-500" "detail renders the product code"
