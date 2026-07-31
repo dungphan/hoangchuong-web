@@ -2,7 +2,7 @@ backend:
   name: github
   repo: dungphan/hoangchuong-web
   branch: main
-  base_url: https://PLACEHOLDER_WORKER.workers.dev
+  base_url: https://chuongk48-decap-oauth.dungpb.workers.dev
   auth_endpoint: auth
 
 local_backend: true
