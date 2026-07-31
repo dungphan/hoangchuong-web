@@ -1,0 +1,15 @@
+{{- $terms := index site.Taxonomies "danh-muc" -}}
+<aside class="sidebar">
+  <h2>Danh mục sản phẩm</h2>
+  <ul>
+    {{- range hugo.Data.danhmuc }}
+      {{- $slug := .slug }}
+      {{- $label := .label }}
+      {{- with index $terms $slug }}
+      <li>
+        <a href="{{ (printf "/danh-muc/%s/" $slug) | relURL }}">{{ $label }} <span class="count">({{ len .Pages }})</span></a>
+      </li>
+      {{- end }}
+    {{- end }}
+  </ul>
+</aside>

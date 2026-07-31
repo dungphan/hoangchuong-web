@@ -1,13 +1,17 @@
 baseURL = "https://hoangchuong-web.pages.dev/"
-locale = "en-us"
-title = "Chuongk48"
+locale = "vi"
+defaultContentLanguage = "vi"
+title = "HDPLAS"
 enableRobotsTXT = true
 
 [taxonomies]
-  tag = "tags"
+  danh_muc = "danh-muc"
 
 [markup.goldmark.renderer]
   unsafe = false
 
 [minify]
   disableHTML = false
+
+[pagination]
+  pagerSize = 12

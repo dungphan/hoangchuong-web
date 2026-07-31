@@ -177,7 +177,7 @@ Append to `scripts/test.sh`:
 
 ```bash
 assert_contains public/san-pham/demo-project/index.html "125.000" "priced product renders a formatted price"
-assert_contains public/san-pham/demo-project/index.html "PET" "detail renders the material"
+assert_contains public/san-pham/demo-project/index.html "<dt>Chất liệu</dt><dd>PET" "detail renders the material"
 assert_contains public/san-pham/demo-project/index.html "24/410" "detail renders the neck size"
 assert_contains public/san-pham/demo-project/index.html "500ml" "detail renders the capacity"
 assert_contains public/san-pham/demo-project/index.html "HD-500" "detail renders the product code"
@@ -342,7 +342,7 @@ Append to `scripts/test.sh`:
 
 ```bash
 assert_file public/danh-muc/chai-pet/index.html "category term page is generated"
-assert_contains public/san-pham/index.html "Chai nhựa PET" "sidebar renders the category label"
+assert_contains public/san-pham/index.html "Chai nhựa PET <span class=count>" "sidebar renders the category label"
 assert_contains public/san-pham/index.html "/danh-muc/chai-pet/" "sidebar links to the category"
 assert_not_contains public/san-pham/index.html "/danh-muc/can-nhua/" "sidebar does not link an empty category"
 assert_contains public/danh-muc/chai-pet/index.html "Chai nhựa PET 500ML" "term page lists its own products"
@@ -440,7 +440,7 @@ Replace `layouts/term.html`:
 <div class="catalogue">
   {{ partial "category-sidebar.html" . }}
   <div class="catalogue-main">
-    <h1>{{ $slug := .Page.File.BaseFileName | default .Title }}{{ range hugo.Data.danhmuc }}{{ if eq .slug $.Title }}{{ .label }}{{ end }}{{ end }}</h1>
+    <h1>{{ $term := .Data.Term }}{{ range hugo.Data.danhmuc }}{{ if eq .slug $term }}{{ .label }}{{ end }}{{ end }}</h1>
     <div class="grid">
       {{- range .Pages }}
         {{ partial "project-card.html" . }}
@@ -525,17 +525,21 @@ git commit -m "feat: danh-muc category taxonomy with sidebar, replacing tags"
 
 Append to `scripts/test.sh`:
 
+The stylesheet is fingerprinted, so its path must be resolved at runtime. The
+assignment must come **before** the assertion that uses it, and the variable
+must be referenced with `$` — `assert_matches assets_css …` would pass the
+literal string `assets_css` as a filename, and since the helper begins
+`[ -f "$1" ]` that assertion could never pass.
+
 ```bash
-assert_matches assets_css 'grid-template-columns: *repeat\(3, *1fr\)' "grid is three columns"
+assets_css=$(ls public/css/main.min.*.css 2>/dev/null | head -1)
+assert_matches "$assets_css" 'grid-template-columns: *repeat\(3, *1fr\)' "grid is three columns"
 assert_file public/san-pham/page/2/index.html "pagination generates a second page"
 assert_contains public/san-pham/index.html "catalogue-main" "grid page uses the catalogue layout"
 ```
 
-The first needs the built CSS path, which is fingerprinted. Add this helper line immediately above those three assertions:
-
-```bash
-assets_css=$(ls public/css/main.min.*.css 2>/dev/null | head -1)
-```
+The regex tolerates zero-or-more spaces because Hugo's minifier emits
+`grid-template-columns:repeat(3,1fr)` without them.
 
 - [ ] **Step 2: Run to verify it fails**
 

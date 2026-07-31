@@ -1,0 +1,5 @@
+{{- with .Params.price -}}
+  <span class="price">{{ lang.FormatCurrency 0 "VND" . }}</span>
+{{- else -}}
+  <span class="price price-contact">Liên hệ</span>
+{{- end -}}

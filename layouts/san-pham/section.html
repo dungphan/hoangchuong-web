@@ -1,8 +1,9 @@
 {{ define "main" }}
+<h1>{{ .Title }}</h1>
+{{ with .Params.intro }}<p>{{ . }}</p>{{ end }}
 <div class="catalogue">
   {{ partial "category-sidebar.html" . }}
   <div class="catalogue-main">
-    <h1>{{ $term := .Data.Term }}{{ range hugo.Data.danhmuc }}{{ if eq .slug $term }}{{ .label }}{{ end }}{{ end }}</h1>
     <div class="grid">
       {{- $paginator := .Paginate .Pages }}
       {{- range $paginator.Pages }}
