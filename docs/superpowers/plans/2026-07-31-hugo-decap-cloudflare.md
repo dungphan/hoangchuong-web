@@ -15,6 +15,7 @@
 Every task's requirements implicitly include this section.
 
 - **Hugo extended 0.164.0 exactly.** Verify with `hugo version` — the string must contain `+extended`. Non-extended builds cannot process WebP.
+- **Config uses `locale`, not `languageCode`.** Hugo deprecated `languageCode` in v0.158.0; on 0.164 it emits a deprecation warning, which the harness treats as a failure.
 - **Use Hugo's current template lookup system (v0.146+), never the legacy one.** No `layouts/_default/` directory. `page.html` not `single.html`. `section.html` not `list.html`. `home.html` not `index.html`. Partials live in `layouts/_partials/`, referenced as `{{ partial "name.html" . }}`.
 - **`decap-cms` pinned to exactly `3.15.1`** in the admin script URL. Never a `^3` range — that script runs holding a repo write token.
 - **The build must emit zero warnings.** `scripts/test.sh` treats any `WARN` or `deprecat` line in Hugo's output as a failure. This is the mechanism that catches accidental use of legacy template names.
@@ -166,7 +167,7 @@ Create `hugo.toml`:
 
 ```toml
 baseURL = "https://example.com/"
-languageCode = "en-us"
+locale = "en-us"
 title = "Chuongk48"
 enableRobotsTXT = true
 
