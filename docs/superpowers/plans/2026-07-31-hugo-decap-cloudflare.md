@@ -16,6 +16,8 @@ Every task's requirements implicitly include this section.
 
 - **Hugo extended 0.164.0 exactly.** Verify with `hugo version` — the string must contain `+extended`. Non-extended builds cannot process WebP.
 - **Config uses `locale`, not `languageCode`.** Hugo deprecated `languageCode` in v0.158.0; on 0.164 it emits a deprecation warning, which the harness treats as a failure.
+- **Data access uses `hugo.Data`, not `site.Data`/`.Site.Data`.** Deprecated in v0.156.0; warns on 0.164.
+- **`| minify | fingerprint` produces `main.min.<hash>.css`,** not `main.<hash>.css`. Assertions must expect the `.min.` segment.
 - **Use Hugo's current template lookup system (v0.146+), never the legacy one.** No `layouts/_default/` directory. `page.html` not `single.html`. `section.html` not `list.html`. `home.html` not `index.html`. Partials live in `layouts/_partials/`, referenced as `{{ partial "name.html" . }}`.
 - **`decap-cms` pinned to exactly `3.15.1`** in the admin script URL. Never a `^3` range — that script runs holding a repo write token.
 - **The build must emit zero warnings.** `scripts/test.sh` treats any `WARN` or `deprecat` line in Hugo's output as a failure. This is the mechanism that catches accidental use of legacy template names.
@@ -259,7 +261,7 @@ Moves nav, social links, and SEO defaults into `data/settings.yaml` so Decap can
 
 **Interfaces:**
 - Consumes: `baseof.html`'s `head` and `main` blocks from Task 1.
-- Produces: `site.Data.settings` with keys `site_title` (string), `description` (string), `nav` (list of `{label, url}`), `social` (list of `{platform, url}`), `contact_email` (string), `og_image` (string path). Partial `head.html` takes the page as context (`.`). Task 7 exposes exactly these keys through Decap.
+- Produces: `hugo.Data.settings` with keys `site_title` (string), `description` (string), `nav` (list of `{label, url}`), `social` (list of `{platform, url}`), `contact_email` (string), `og_image` (string path). Partial `head.html` takes the page as context (`.`). Task 7 exposes exactly these keys through Decap.
 
 - [ ] **Step 1: Write the failing assertions**
 
@@ -271,7 +273,7 @@ assert_contains public/index.html "Chuongk48" "home page renders the site title"
 assert_matches public/index.html '<meta name=.?description' "head emits a description meta tag"
 assert_matches public/index.html '<meta property=.?og:title' "head emits OpenGraph title"
 assert_matches public/index.html 'rel=.?canonical' "head emits a canonical link"
-assert_matches public/index.html '<link rel=.?stylesheet.? href=./css/main\.[a-f0-9]+\.css' "stylesheet is fingerprinted"
+assert_matches public/index.html '<link rel=.?stylesheet.? href=.?/css/main\.min\.[a-f0-9]+\.css' "stylesheet is fingerprinted"
 assert_contains public/index.html "Projects" "header renders nav from settings"
 assert_contains public/index.html "mailto:" "footer renders the contact email"
 ```
@@ -355,7 +357,7 @@ figcaption { color: var(--muted); font-size: 0.875rem; margin-top: 0.5rem; }
 Create `layouts/_partials/head.html`:
 
 ```html
-{{- $s := site.Data.settings -}}
+{{- $s := hugo.Data.settings -}}
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{{ if .IsHome }}{{ $s.site_title }}{{ else }}{{ .Title }} — {{ $s.site_title }}{{ end }}</title>
@@ -378,7 +380,7 @@ Create `layouts/_partials/head.html`:
 Create `layouts/_partials/header.html`:
 
 ```html
-{{- $s := site.Data.settings -}}
+{{- $s := hugo.Data.settings -}}
 <header class="site-header">
   <div class="wrap">
     <a href="{{ "/" | relURL }}"><strong>{{ $s.site_title }}</strong></a>
@@ -394,7 +396,7 @@ Create `layouts/_partials/header.html`:
 Create `layouts/_partials/footer.html`:
 
 ```html
-{{- $s := site.Data.settings -}}
+{{- $s := hugo.Data.settings -}}
 <footer class="site-footer">
   <div class="wrap">
     <small>&copy; {{ now.Year }} {{ $s.site_title }}</small>
@@ -434,7 +436,7 @@ Replace the entire contents of `layouts/home.html` (the `head` block is now owne
 
 ```html
 {{ define "main" }}
-<h1>{{ site.Data.settings.site_title }}</h1>
+<h1>{{ hugo.Data.settings.site_title }}</h1>
 {{ .Content }}
 {{ end }}
 ```
@@ -531,7 +533,7 @@ Replace `layouts/home.html`:
 
 ```html
 {{ define "main" }}
-<h1>{{ with .Params.hero_heading }}{{ . }}{{ else }}{{ site.Data.settings.site_title }}{{ end }}</h1>
+<h1>{{ with .Params.hero_heading }}{{ . }}{{ else }}{{ hugo.Data.settings.site_title }}{{ end }}</h1>
 {{ with .Params.hero_subheading }}<p>{{ . }}</p>{{ end }}
 {{ with .Resources.GetMatch (.Params.hero_image | default "hero.*") }}
   {{ partial "image.html" (dict "img" . "alt" $.Params.hero_heading "loading" "eager" "sizes" "(max-width: 68rem) 100vw, 68rem") }}
