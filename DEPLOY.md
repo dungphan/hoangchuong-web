@@ -34,6 +34,20 @@ Under **Settings → Build**, confirm the **build image is the latest version**.
 Older images cap which Hugo versions they will install, and `0.164.0` will
 fail to fetch on an old one.
 
+This pins Hugo to `0.164.0` for Cloudflare's build only. `scripts/test.sh`
+(Step 9) runs the same build locally, so install a matching **Hugo extended**
+binary on your machine too — e.g. `brew install hugo` — and confirm with
+`hugo version` that the output contains `+extended`; a non-extended build
+cannot produce the WebP images this site relies on and will not match what
+Cloudflare builds.
+
+Note also that Cloudflare Pages auto-installs the root `package.json`'s
+dependencies (`decap-server` and its transitive packages) before every
+build, even though the build command above never calls `npm install`
+explicitly. This is harmless — nothing here is needed at Hugo build time —
+but it means the build is not literally "no npm install step on Cloudflare,"
+so it's worth knowing rather than discovering by surprise.
+
 Wait for the first deploy, then note the assigned `https://<project>.pages.dev`
 URL.
 
@@ -57,9 +71,14 @@ GitHub → **Settings → Developer settings → OAuth Apps → New OAuth App**:
 
 - Application name: `Chuongk48 CMS`
 - Homepage URL: `https://<project>.pages.dev`
-- Authorization callback URL: `https://chuongk48-decap-oauth.<your-subdomain>.workers.dev/callback`
-  (placeholder — the real Worker subdomain is not known until Step 5; return
-  and correct this field in Step 6)
+- Authorization callback URL: a placeholder — the real Worker subdomain is
+  not known until Step 5, but GitHub validates this field and rejects
+  anything that isn't a parseable URL, so `<your-subdomain>` literally typed
+  in will bounce at form submit. Enter a valid throwaway value instead, e.g.
+  `https://example.com/callback`, or run `npx wrangler whoami` first to get
+  your real `workers.dev` subdomain and use
+  `https://chuongk48-decap-oauth.<real-subdomain>.workers.dev/callback`
+  directly. Either way, return and correct this field in Step 6.
 
 Copy the Client ID, then generate and copy a Client Secret. The secret is
 used once, in Step 5, and must never be committed to this repository.
@@ -81,6 +100,8 @@ Then:
 
 ```bash
 cd worker
+npm install                                    # installs the pinned wrangler (see worker/package.json); without
+                                                # this, npx would fetch whatever version npm currently serves
 npx wrangler login
 npx wrangler secret put GITHUB_CLIENT_SECRET   # paste the secret; it is never written to disk
 npx wrangler deploy
@@ -103,7 +124,10 @@ curl -sSI "https://<worker>.<subdomain>.workers.dev/auth" | grep -Ei '^(HTTP|loc
 
 Expected: `HTTP/2 302`, a `location` pointing at
 `github.com/login/oauth/authorize` carrying your real client ID, and a
-`set-cookie` with `oauth_state=`, `HttpOnly`, and `Secure`.
+`set-cookie` with `__Host-oauth_state=`, `HttpOnly`, and `Secure`. The
+`__Host-` prefix is load-bearing — it's what makes the browser enforce
+`Secure`, `Path=/`, and no `Domain=` on this cookie, which is the whole CSRF
+defence. A cookie missing that prefix is not a passing result.
 
 ## 8. Point Decap at the worker, and fix the site's baseURL
 

@@ -25,6 +25,15 @@ test('/auth redirects to GitHub and sets a state cookie', async () => {
   assert.ok(cookie.includes(`__Host-oauth_state=${state}`), 'cookie must carry the same state')
   assert.ok(cookie.includes('HttpOnly'), 'state cookie must be HttpOnly')
   assert.ok(cookie.includes('Secure'), 'state cookie must be Secure')
+  // The __Host- prefix is only a real guarantee if the browser actually
+  // enforces its preconditions: Path=/ and no Domain= attribute. Both are
+  // required for the __Host- prefix to be honored at all; a cookie with
+  // Domain= (even the exact same host) or a narrower Path is silently
+  // refused by the browser, which means /callback finds no state cookie and
+  // every login fails with a 400 -- a regression a plain substring check on
+  // "__Host-" or "Secure" would not catch (finding 1, final review).
+  assert.ok(/(?:^|;\s*)Path=\//.test(cookie), 'state cookie must set Path=/ (required for __Host- to be honored)')
+  assert.ok(!/;\s*Domain=/i.test(cookie), 'state cookie must NOT set a Domain attribute (required for __Host- to be honored)')
 })
 
 test('/callback rejects a mismatched state', async () => {

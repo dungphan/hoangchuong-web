@@ -54,7 +54,7 @@ assert_contains public/projects/index.html "Demo Project" "grid lists the demo p
 assert_contains public/projects/index.html "A short summary" "grid renders the summary"
 assert_file public/projects/demo-project/index.html "project detail page is generated"
 assert_contains public/projects/demo-project/index.html "Acme Corp" "detail renders the client field"
-assert_contains public/projects/demo-project/index.html "2026" "detail renders the year field"
+assert_matches public/projects/demo-project/index.html '<dt>Year</dt><dd>[0-9]{4}</dd>' "detail renders the year field"
 assert_matches public/projects/demo-project/index.html 'rel=.?noopener' "external link is rel-protected"
 assert_contains public/projects/demo-project/index.html "A caption" "detail renders gallery captions"
 assert_matches public/projects/demo-project/index.html 'width=.?300.? height=.?168' "image partial does not upscale a sub-800px source (regression)"

@@ -11,6 +11,13 @@ New projects are created as drafts. Untick **Draft** to publish.
 
 ## Local development
 
+Requires **Hugo extended 0.164.0** installed locally (e.g. `brew install
+hugo`) — `npm install` only provides `decap-server`, not Hugo itself, so
+`npm run dev` and `npm test` fail with `hugo: command not found` on a clean
+machine without it. Confirm with `hugo version`; the output must contain
+`+extended` — a non-extended build cannot produce the WebP images this site
+relies on.
+
 ```bash
 npm install
 npm run dev     # hugo server at :1313, drafts visible
