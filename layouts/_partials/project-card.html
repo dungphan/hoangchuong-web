@@ -1,0 +1,10 @@
+{{- $p := . -}}
+<article class="card">
+  <a href="{{ $p.RelPermalink }}">
+    {{- with $p.Resources.GetMatch ($p.Params.cover | default "cover.*") }}
+      {{ partial "image.html" (dict "img" . "alt" $p.Title "sizes" "(max-width: 40rem) 100vw, 17rem") }}
+    {{- end }}
+    <h2>{{ $p.Title }}</h2>
+  </a>
+  {{- with $p.Params.summary }}<p>{{ . }}</p>{{ end }}
+</article>
