@@ -22,6 +22,7 @@ Every task's requirements implicitly include this section.
 - **`decap-cms` pinned to exactly `3.15.1`** in the admin script URL. Never a `^3` range — that script runs holding a repo write token.
 - **The build must emit zero warnings.** `scripts/test.sh` treats any `WARN` or `deprecat` line in Hugo's output as a failure. This is the mechanism that catches accidental use of legacy template names.
 - **All content is a page bundle** (`<slug>/index.md` with images beside it). Hugo cannot run image processing on files under `static/`.
+- **The CMS field is authoritative for images.** Never resolve an image with `{{ .Params.X | default "X.*" }}` — Hugo's `default` treats `""` as unset, so the glob fires when an editor clears the field and the image cannot be removed from the CMS. Guard on the param first, then `GetMatch` it: `{{ with .Params.cover }}{{ with $.Resources.GetMatch . }}…{{ end }}{{ end }}`. Mind the scope variable — `project-card.html` uses `$p`, not `$`.
 - **Never commit the GitHub OAuth client secret.** It lives only in Worker secret storage via `wrangler secret put`.
 - **The Worker must `postMessage` to an exact origin, never `*`,** and must verify the OAuth `state` on callback.
 - **Commit after every task.** Conventional Commits style (`feat:`, `chore:`, `docs:`).
@@ -535,8 +536,10 @@ Replace `layouts/home.html`:
 {{ define "main" }}
 <h1>{{ with .Params.hero_heading }}{{ . }}{{ else }}{{ hugo.Data.settings.site_title }}{{ end }}</h1>
 {{ with .Params.hero_subheading }}<p>{{ . }}</p>{{ end }}
-{{ with .Resources.GetMatch (.Params.hero_image | default "hero.*") }}
-  {{ partial "image.html" (dict "img" . "alt" $.Params.hero_heading "loading" "eager" "sizes" "(max-width: 68rem) 100vw, 68rem") }}
+{{ with .Params.hero_image }}
+  {{ with $.Resources.GetMatch . }}
+    {{ partial "image.html" (dict "img" . "alt" $.Params.hero_heading "loading" "eager" "sizes" "(max-width: 68rem) 100vw, 68rem") }}
+  {{ end }}
 {{ end }}
 {{ .Content }}
 {{ end }}
@@ -678,8 +681,10 @@ Create `layouts/_partials/project-card.html`:
 {{- $p := . -}}
 <article class="card">
   <a href="{{ $p.RelPermalink }}">
-    {{- with $p.Resources.GetMatch ($p.Params.cover | default "cover.*") }}
-      {{ partial "image.html" (dict "img" . "alt" $p.Title "sizes" "(max-width: 40rem) 100vw, 17rem") }}
+    {{- with $p.Params.cover }}
+      {{- with $p.Resources.GetMatch . }}
+        {{ partial "image.html" (dict "img" . "alt" $p.Title "sizes" "(max-width: 40rem) 100vw, 17rem") }}
+      {{- end }}
     {{- end }}
     <h2>{{ $p.Title }}</h2>
   </a>
@@ -720,8 +725,10 @@ Create `layouts/projects/page.html`:
   <p><a href="{{ . }}" rel="noopener noreferrer" target="_blank">Visit project &rarr;</a></p>
   {{- end }}
 
-  {{- with .Resources.GetMatch (.Params.cover | default "cover.*") }}
-    {{ partial "image.html" (dict "img" . "alt" $.Title "loading" "eager" "sizes" "(max-width: 68rem) 100vw, 68rem") }}
+  {{- with .Params.cover }}
+    {{- with $.Resources.GetMatch . }}
+      {{ partial "image.html" (dict "img" . "alt" $.Title "loading" "eager" "sizes" "(max-width: 68rem) 100vw, 68rem") }}
+    {{- end }}
   {{- end }}
 
   <div class="body">{{ .Content }}</div>
@@ -895,8 +902,10 @@ Create `layouts/page.html`:
 {{ define "main" }}
 <article>
   <h1>{{ .Title }}</h1>
-  {{- with .Resources.GetMatch (.Params.portrait | default "portrait.*") }}
-    {{ partial "image.html" (dict "img" . "alt" $.Title "sizes" "(max-width: 30rem) 100vw, 30rem") }}
+  {{- with .Params.portrait }}
+    {{- with $.Resources.GetMatch . }}
+      {{ partial "image.html" (dict "img" . "alt" $.Title "sizes" "(max-width: 30rem) 100vw, 30rem") }}
+    {{- end }}
   {{- end }}
   <div class="body">{{ .Content }}</div>
 </article>
