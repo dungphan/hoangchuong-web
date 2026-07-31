@@ -1,13 +1,13 @@
 {{ define "main" }}
 <article>
   <h1>{{ .Title }}</h1>
-  <dl class="meta">
-    {{- with .Params.client }}<div><dt>Client</dt><dd>{{ . }}</dd></div>{{ end }}
-    {{- with .Params.year }}<div><dt>Year</dt><dd>{{ . }}</dd></div>{{ end }}
+  {{ partial "price.html" . }}
+  <dl class="specs">
+    {{- with .Params.code }}<div><dt>Mã sản phẩm</dt><dd>{{ . }}</dd></div>{{ end }}
+    {{- with .Params.capacity }}<div><dt>Dung tích</dt><dd>{{ . }}</dd></div>{{ end }}
+    {{- with .Params.material }}<div><dt>Chất liệu</dt><dd>{{ . }}</dd></div>{{ end }}
+    {{- with .Params.neck }}<div><dt>Cổ chai</dt><dd>{{ . }}</dd></div>{{ end }}
   </dl>
-  {{- with .Params.external_url }}
-  <p><a href="{{ . }}" rel="noopener noreferrer" target="_blank">Visit project &rarr;</a></p>
-  {{- end }}
 
   {{- with .Params.cover }}
     {{- with $.Resources.GetMatch . }}

@@ -55,20 +55,18 @@ assert_matches public/index.html 'width=.?[0-9]+.? height=.?[0-9]+' "image parti
 assert_contains public/index.html 'decoding=async' "image partial sets async decoding"
 
 assert_file public/san-pham/index.html "projects grid is generated"
-assert_contains public/san-pham/index.html "Demo Project" "grid lists the demo project"
-assert_contains public/san-pham/index.html "A short summary" "grid renders the summary"
+assert_contains public/san-pham/index.html "Hũ nhựa PET 1000ML" "grid lists the demo project"
+assert_contains public/san-pham/index.html "Hũ nhựa PET dung tích 1000ml" "grid renders the summary"
 assert_file public/san-pham/demo-project/index.html "project detail page is generated"
-assert_contains public/san-pham/demo-project/index.html "Acme Corp" "detail renders the client field"
-assert_matches public/san-pham/demo-project/index.html '<dt>Year</dt><dd>[0-9]{4}</dd>' "detail renders the year field"
 assert_matches public/san-pham/demo-project/index.html 'rel=.?noopener' "external link is rel-protected"
-assert_contains public/san-pham/demo-project/index.html "A caption" "detail renders gallery captions"
+assert_contains public/san-pham/demo-project/index.html "Mặt trước" "detail renders gallery captions"
 assert_matches public/san-pham/demo-project/index.html 'width=.?300.? height=.?168' "image partial does not upscale a sub-800px source (regression)"
 assert_no_draft() { if [ -d public/san-pham/hidden-draft ]; then fail "draft project is excluded from build"; else pass "draft project is excluded from build"; fi; }
 assert_no_draft
 
 assert_file public/tags/index.html "tag index page is generated"
 assert_file public/tags/branding/index.html "tag term page is generated"
-assert_contains public/tags/branding/index.html "Demo Project" "term page lists tagged projects"
+assert_contains public/tags/branding/index.html "Hũ nhựa PET 1000ML" "term page lists tagged projects"
 assert_contains public/san-pham/index.html "/tags/branding/" "grid card links to tag pages"
 
 assert_file public/gioi-thieu/index.html "about page is generated"
@@ -86,6 +84,15 @@ assert_contains public/admin/index.html "decap-cms@3.15.1" "Decap is pinned to a
 assert_not_contains public/admin/index.html "decap-cms@^3" "Decap is not loaded from a floating range"
 assert_contains public/admin/config.yml "external_url" "config exposes every project field"
 assert_contains public/admin/config.yml "local_backend" "local backend is enabled for offline editing"
+
+assert_contains public/san-pham/demo-project/index.html "125.000" "priced product renders a formatted price"
+assert_contains public/san-pham/demo-project/index.html "PET" "detail renders the material"
+assert_contains public/san-pham/demo-project/index.html "24/410" "detail renders the neck size"
+assert_contains public/san-pham/demo-project/index.html "500ml" "detail renders the capacity"
+assert_contains public/san-pham/demo-project/index.html "HD-500" "detail renders the product code"
+assert_contains public/san-pham/chai-pet-500ml/index.html "Liên hệ" "unpriced product renders Liên hệ"
+assert_not_contains public/san-pham/chai-pet-500ml/index.html "0 ₫" "unpriced product does not render a zero price"
+assert_contains public/san-pham/index.html "Liên hệ" "grid card shows Liên hệ for unpriced products"
 
 echo
 if [ "$FAIL" -eq 0 ]; then

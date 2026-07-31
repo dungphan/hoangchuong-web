@@ -1,5 +1,6 @@
 baseURL = "https://hoangchuong-web.pages.dev/"
-locale = "en-us"
+locale = "vi"
+defaultContentLanguage = "vi"
 title = "Chuongk48"
 enableRobotsTXT = true
 
