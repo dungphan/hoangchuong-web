@@ -44,6 +44,10 @@ assert_matches public/index.html 'rel=.?canonical' "head emits a canonical link"
 assert_matches public/index.html '<link rel=.?stylesheet.? href=.?/css/main\.min\.[a-f0-9]+\.css' "stylesheet is fingerprinted"
 assert_contains public/index.html "Projects" "header renders nav from settings"
 assert_contains public/index.html "mailto:" "footer renders the contact email"
+assert_matches public/index.html 'srcset=' "image partial emits a srcset"
+assert_matches public/index.html '\.webp' "image partial converts to WebP"
+assert_matches public/index.html 'width=.?[0-9]+.? height=.?[0-9]+' "image partial emits intrinsic dimensions"
+assert_contains public/index.html 'decoding=async' "image partial sets async decoding"
 
 echo
 if [ "$FAIL" -eq 0 ]; then

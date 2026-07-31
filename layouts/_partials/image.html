@@ -1,0 +1,18 @@
+{{- $img := .img -}}
+{{- $alt := .alt | default "" -}}
+{{- $sizes := .sizes | default "100vw" -}}
+{{- $loading := .loading | default "lazy" -}}
+{{- if $img -}}
+  {{- $srcset := slice -}}
+  {{- range (slice 400 800 1200 1600) -}}
+    {{- if ge $img.Width . -}}
+      {{- $r := $img.Resize (printf "%dx webp q80" .) -}}
+      {{- $srcset = $srcset | append (printf "%s %dw" $r.RelPermalink .) -}}
+    {{- end -}}
+  {{- end -}}
+  {{- $base := $img.Resize "800x webp q80" -}}
+  <img src="{{ $base.RelPermalink }}"
+    {{- with $srcset }} srcset="{{ delimit . ", " }}" sizes="{{ $sizes }}"{{ end }}
+    width="{{ $base.Width }}" height="{{ $base.Height }}"
+    alt="{{ $alt }}" loading="{{ $loading }}" decoding="async">
+{{- end -}}
