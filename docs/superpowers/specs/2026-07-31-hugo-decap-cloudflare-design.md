@@ -13,13 +13,27 @@ as Markdown in a Git repository; publishing is a commit.
 
 | Decision | Choice | Reason |
 |---|---|---|
-| Static site generator | Hugo (extended) | Chosen by the project owner |
+| Static site generator | Hugo extended v0.164.0 | Chosen by the project owner |
 | Host | Cloudflare Pages | Consolidates with the OAuth Worker on one account |
-| CMS | Decap CMS 3.x, GitHub backend | Git-based, no CMS server to run |
+| CMS | Decap CMS 3.15.1, GitHub backend | Git-based, no CMS server to run |
 | Auth | Cloudflare Worker OAuth proxy | Required: GitHub OAuth needs a server-side secret |
 | Editors | Owner + 2-5 teammates, GitHub accounts | Repo collaborators |
 | Publish mode | Direct commit to `main` | Fastest loop; `draft` flag covers work-in-progress |
 | Media | Hugo page bundles | Only path that keeps Hugo's image processing available |
+
+### Pinned versions
+
+Current as of 2026-07-31. Every one is pinned exactly, not by range.
+
+| Component | Version | Pinned where |
+|---|---|---|
+| Hugo (extended) | 0.164.0 | `HUGO_VERSION` in Cloudflare Pages build env; matched locally |
+| `decap-cms` | 3.15.1 | exact URL in `static/admin/index.html` |
+| `decap-server` | 3.10.0 | devDependency, for `local_backend` editing |
+| Node | 26.x | local only; not needed by the Cloudflare build |
+
+Node is a development convenience (it runs `decap-server`). The production build
+is Hugo alone, with no npm install step on Cloudflare.
 
 ## Architecture
 
@@ -113,14 +127,33 @@ malformed config file fails the build harder than a malformed data file.
 
 ### Templates
 
-Roughly seven files: `baseof`, `index` (home), `page` (about),
-`projects/list` (grid), `projects/single` (detail), plus `header` and `footer`
-partials.
+Hugo v0.146 replaced the old template lookup system, and this project targets
+0.164, so layouts use the current convention throughout: no `_default/`
+directory, `single.html` becomes `page.html`, `list.html` becomes `section.html`,
+`index.html` becomes `home.html`, and partials move under `_partials/`.
 
-One additional partial earns its keep: an **image partial** taking a page resource
-and emitting a resized, WebP, `srcset`-bearing `<img>`. Every cover and gallery
-image renders through it, so Hugo's image-pipeline verbosity is written once
-rather than repeated across templates.
+```
+layouts/
+  baseof.html                # shell
+  home.html                  # landing page
+  page.html                  # about, and any standalone page
+  projects/
+    section.html             # catalog grid
+    page.html                # project detail
+  _partials/
+    head.html
+    header.html
+    footer.html
+    image.html               # see below
+```
+
+The legacy names still resolve in 0.164 but emit deprecation warnings, so a new
+site should not be written against them.
+
+`_partials/image.html` earns its keep: it takes a page resource and emits a
+resized, WebP, `srcset`-bearing `<img>`. Every cover and gallery image renders
+through it, so Hugo's image-pipeline verbosity is written once rather than
+repeated across templates.
 
 ## Risks and mitigations
 
@@ -130,9 +163,11 @@ error. The field table above is the single source of truth for field names.
 Templates guard every optional field with `{{ with }}` so absence degrades cleanly
 instead of emitting empty attributes.
 
-**Hugo version drift.** Hugo changed its template lookup rules in recent releases.
-`HUGO_VERSION` is pinned in the Cloudflare build environment and matched locally,
-so a host-side upgrade cannot silently break the build.
+**Hugo version drift.** Hugo v0.146 replaced the template lookup system wholesale.
+`HUGO_VERSION=0.164.0` is pinned in the Cloudflare build environment and matched
+locally, so a host-side upgrade cannot silently change which template files are
+resolved. Cloudflare Pages must also be set to its latest build image; older
+images cap the Hugo versions they will install.
 
 **`postMessage` origin.** The Worker must target the exact site origin, never `*`.
 With `*`, any page able to open the `/auth` popup receives a GitHub token carrying
@@ -142,9 +177,11 @@ project, and most copy-paste Worker snippets published online get it wrong.
 **OAuth `state`.** Must be verified on callback, not merely generated, or the
 login flow is CSRF-able.
 
-**Decap CDN pin.** `static/admin/index.html` loads Decap at an exact version, not
-a `^3` range. That script executes with a repo write token in scope; a floating
-range would auto-adopt a broken or compromised publish.
+**Decap CDN pin.** `static/admin/index.html` loads
+`https://unpkg.com/decap-cms@3.15.1/dist/decap-cms.js` — an exact version, never a
+`^3` range. That script executes with a repo write token in scope; a floating
+range would auto-adopt a broken or compromised publish into the admin panel with
+no action on our part.
 
 **Secrets.** The GitHub OAuth client secret exists only in Worker secret storage
 via `wrangler secret put`. Never committed. Client ID is public and may live in
