@@ -1,0 +1,7 @@
+name = "chuongk48-decap-oauth"
+main = "src/index.js"
+compatibility_date = "2026-07-01"
+
+[vars]
+GITHUB_CLIENT_ID = "PLACEHOLDER_CLIENT_ID"
+SITE_ORIGIN = "https://PLACEHOLDER.pages.dev"
