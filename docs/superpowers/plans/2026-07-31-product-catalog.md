@@ -342,7 +342,7 @@ Append to `scripts/test.sh`:
 
 ```bash
 assert_file public/danh-muc/chai-pet/index.html "category term page is generated"
-assert_contains public/san-pham/index.html "Chai nhựa PET" "sidebar renders the category label"
+assert_contains public/san-pham/index.html "Chai nhựa PET <span class=count>" "sidebar renders the category label"
 assert_contains public/san-pham/index.html "/danh-muc/chai-pet/" "sidebar links to the category"
 assert_not_contains public/san-pham/index.html "/danh-muc/can-nhua/" "sidebar does not link an empty category"
 assert_contains public/danh-muc/chai-pet/index.html "Chai nhựa PET 500ML" "term page lists its own products"
@@ -440,7 +440,7 @@ Replace `layouts/term.html`:
 <div class="catalogue">
   {{ partial "category-sidebar.html" . }}
   <div class="catalogue-main">
-    <h1>{{ $slug := .Page.File.BaseFileName | default .Title }}{{ range hugo.Data.danhmuc }}{{ if eq .slug $.Title }}{{ .label }}{{ end }}{{ end }}</h1>
+    <h1>{{ $term := .Data.Term }}{{ range hugo.Data.danhmuc }}{{ if eq .slug $term }}{{ .label }}{{ end }}{{ end }}</h1>
     <div class="grid">
       {{- range .Pages }}
         {{ partial "project-card.html" . }}
