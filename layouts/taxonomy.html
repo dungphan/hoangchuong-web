@@ -1,8 +1,4 @@
 {{ define "main" }}
-<h1>{{ .Title }}</h1>
-<ul class="tags">
-  {{- range .Pages }}
-  <li><a href="{{ .RelPermalink }}">{{ .Title }} ({{ len .Pages }})</a></li>
-  {{- end }}
-</ul>
+<h1>Danh mục sản phẩm</h1>
+{{ partial "category-sidebar.html" . }}
 {{ end }}

@@ -9,9 +9,7 @@ gallery:
     caption: Mặt trước
   - image: shot-02.jpg
     caption: Chi tiết nắp
-tags:
-  - branding
-  - print
+danh-muc: hu-nhua
 code: HD-500
 capacity: 500ml
 material: PET

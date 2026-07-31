@@ -1,8 +1,13 @@
 {{ define "main" }}
-<h1>Tagged &ldquo;{{ .Title }}&rdquo;</h1>
-<div class="grid">
-  {{- range .Pages }}
-    {{ partial "project-card.html" . }}
-  {{- end }}
+<div class="catalogue">
+  {{ partial "category-sidebar.html" . }}
+  <div class="catalogue-main">
+    <h1>{{ $term := .Data.Term }}{{ range hugo.Data.danhmuc }}{{ if eq .slug $term }}{{ .label }}{{ end }}{{ end }}</h1>
+    <div class="grid">
+      {{- range .Pages }}
+        {{ partial "project-card.html" . }}
+      {{- end }}
+    </div>
+  </div>
 </div>
 {{ end }}

@@ -4,8 +4,7 @@ date: 2026-07-30
 draft: false
 summary: Chai PET 500ml, cổ 24/410, phù hợp đóng gói mỹ phẩm và dung dịch.
 cover: cover.jpg
-tags:
-  - branding
+danh-muc: chai-pet
 code: HD-501
 capacity: 500ml
 material: PET

@@ -63,10 +63,12 @@ assert_matches public/san-pham/demo-project/index.html 'width=.?300.? height=.?1
 assert_no_draft() { if [ -d public/san-pham/hidden-draft ]; then fail "draft project is excluded from build"; else pass "draft project is excluded from build"; fi; }
 assert_no_draft
 
-assert_file public/tags/index.html "tag index page is generated"
-assert_file public/tags/branding/index.html "tag term page is generated"
-assert_contains public/tags/branding/index.html "Hũ nhựa PET 1000ML" "term page lists tagged projects"
-assert_contains public/san-pham/index.html "/tags/branding/" "grid card links to tag pages"
+assert_file public/danh-muc/chai-pet/index.html "category term page is generated"
+assert_contains public/san-pham/index.html "Chai nhựa PET <span class=count>" "sidebar renders the category label"
+assert_contains public/san-pham/index.html "/danh-muc/chai-pet/" "sidebar links to the category"
+assert_not_contains public/san-pham/index.html "/danh-muc/can-nhua/" "sidebar does not link an empty category"
+assert_contains public/danh-muc/chai-pet/index.html "Chai nhựa PET 500ML" "term page lists its own products"
+assert_not_contains public/danh-muc/hu-nhua/index.html "Chai nhựa PET 500ML" "term page excludes other categories' products"
 
 assert_file public/gioi-thieu/index.html "about page is generated"
 assert_contains public/gioi-thieu/index.html "About" "about page renders its title"

@@ -5,7 +5,7 @@ title = "Chuongk48"
 enableRobotsTXT = true
 
 [taxonomies]
-  tag = "tags"
+  danh_muc = "danh-muc"
 
 [markup.goldmark.renderer]
   unsafe = false
