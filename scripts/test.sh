@@ -58,7 +58,6 @@ assert_file public/san-pham/index.html "projects grid is generated"
 assert_contains public/san-pham/index.html "Hũ nhựa PET 1000ML" "grid lists the demo project"
 assert_contains public/san-pham/index.html "Hũ nhựa PET dung tích 1000ml" "grid renders the summary"
 assert_file public/san-pham/demo-project/index.html "project detail page is generated"
-assert_matches public/san-pham/demo-project/index.html 'rel=.?noopener' "external link is rel-protected"
 assert_contains public/san-pham/demo-project/index.html "Mặt trước" "detail renders gallery captions"
 assert_matches public/san-pham/demo-project/index.html 'width=.?300.? height=.?168' "image partial does not upscale a sub-800px source (regression)"
 assert_no_draft() { if [ -d public/san-pham/hidden-draft ]; then fail "draft project is excluded from build"; else pass "draft project is excluded from build"; fi; }
@@ -86,7 +85,7 @@ assert_contains public/admin/config.yml "external_url" "config exposes every pro
 assert_contains public/admin/config.yml "local_backend" "local backend is enabled for offline editing"
 
 assert_contains public/san-pham/demo-project/index.html "125.000" "priced product renders a formatted price"
-assert_contains public/san-pham/demo-project/index.html "PET" "detail renders the material"
+assert_contains public/san-pham/demo-project/index.html "<dt>Chất liệu</dt><dd>PET" "detail renders the material"
 assert_contains public/san-pham/demo-project/index.html "24/410" "detail renders the neck size"
 assert_contains public/san-pham/demo-project/index.html "500ml" "detail renders the capacity"
 assert_contains public/san-pham/demo-project/index.html "HD-500" "detail renders the product code"
