@@ -6,6 +6,9 @@
       {{- with $s.contact_email }}
       <a href="mailto:{{ . }}">Email</a>
       {{- end }}
+      {{- with $s.phone }}
+      <a href="tel:{{ replace . " " "" }}">{{ . }}</a>
+      {{- end }}
       {{- range $s.social }}
       <a href="{{ .url }}" rel="noopener noreferrer" target="_blank">{{ .platform }}</a>
       {{- end }}

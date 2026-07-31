@@ -42,12 +42,12 @@ fi
 echo "==> Assertions"
 # --- assertions ---
 assert_file public/index.html "home page is generated"
-assert_contains public/index.html "Chuongk48" "home page renders the site title"
+assert_contains public/index.html "HDPLAS" "home page renders the site title"
 assert_matches public/index.html '<meta name=.?description' "head emits a description meta tag"
 assert_matches public/index.html '<meta property=.?og:title' "head emits OpenGraph title"
 assert_matches public/index.html 'rel=.?canonical' "head emits a canonical link"
 assert_matches public/index.html '<link rel=.?stylesheet.? href=.?/css/main\.min\.[a-f0-9]+\.css' "stylesheet is fingerprinted"
-assert_contains public/index.html "Projects" "header renders nav from settings"
+assert_contains public/index.html "Trang chủ" "header renders nav from settings"
 assert_contains public/index.html "mailto:" "footer renders the contact email"
 assert_matches public/index.html 'srcset=' "image partial emits a srcset"
 assert_matches public/index.html '\.webp' "image partial converts to WebP"
@@ -71,8 +71,8 @@ assert_contains public/danh-muc/chai-pet/index.html "Chai nhựa PET 500ML" "ter
 assert_not_contains public/danh-muc/hu-nhua/index.html "Chai nhựa PET 500ML" "term page excludes other categories' products"
 
 assert_file public/gioi-thieu/index.html "about page is generated"
-assert_contains public/gioi-thieu/index.html "About" "about page renders its title"
-assert_contains public/gioi-thieu/index.html "studio based in" "about page renders body content"
+assert_contains public/gioi-thieu/index.html "Giới thiệu" "about page renders its title"
+assert_contains public/gioi-thieu/index.html "Chúng tôi sản xuất bao bì nhựa PET và HDPE" "about page renders body content"
 
 # --- CMS-field-wins regression (content/gioi-thieu has portrait: "" AND a portrait.jpg
 # sitting in its bundle; an empty/absent field must win over any glob fallback) ---
@@ -99,6 +99,12 @@ assets_css=$(ls public/css/main.min.*.css 2>/dev/null | head -1)
 assert_matches "$assets_css" 'grid-template-columns: *repeat\(3, *1fr\)' "grid is three columns"
 assert_file public/san-pham/page/2/index.html "pagination generates a second page"
 assert_contains public/san-pham/index.html "catalogue-main" "grid page uses the catalogue layout"
+
+assert_file public/404.html "404 page is generated"
+assert_contains public/404.html "Không tìm thấy" "404 page is in Vietnamese"
+assert_contains public/index.html "Sản phẩm" "nav is in Vietnamese"
+assert_contains public/index.html "HDPLAS" "home renders the Vietnamese site title"
+assert_contains public/gioi-thieu/index.html "Giới thiệu" "about page is in Vietnamese"
 
 echo
 if [ "$FAIL" -eq 0 ]; then

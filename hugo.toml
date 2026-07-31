@@ -1,7 +1,7 @@
 baseURL = "https://hoangchuong-web.pages.dev/"
 locale = "vi"
 defaultContentLanguage = "vi"
-title = "Chuongk48"
+title = "HDPLAS"
 enableRobotsTXT = true
 
 [taxonomies]

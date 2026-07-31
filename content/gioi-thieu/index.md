@@ -1,6 +1,6 @@
 ---
-title: About
+title: Giới thiệu
 portrait: ""
 ---
 
-A small studio based in Ho Chi Minh City, working on brand and print projects.
+Chúng tôi sản xuất bao bì nhựa PET và HDPE cho ngành thực phẩm, mỹ phẩm và dược phẩm, phục vụ khách hàng trong và ngoài nước.

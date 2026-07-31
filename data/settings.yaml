@@ -1,12 +1,15 @@
-site_title: Chuongk48
-description: Selected work and projects.
+site_title: HDPLAS
+description: Chuyên sản xuất chai, hũ, nắp và can nhựa PET, HDPE cho thực phẩm, mỹ phẩm và dược phẩm.
 og_image: ""
-contact_email: hello@example.com
+contact_email: sales@example.com
+phone: "0900 000 000"
 nav:
-  - label: Projects
+  - label: Trang chủ
+    url: /
+  - label: Sản phẩm
     url: /san-pham/
-  - label: About
+  - label: Giới thiệu
     url: /gioi-thieu/
 social:
-  - platform: GitHub
-    url: https://github.com/
+  - platform: Facebook
+    url: https://facebook.com/
