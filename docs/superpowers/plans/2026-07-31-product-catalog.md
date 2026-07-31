@@ -525,17 +525,21 @@ git commit -m "feat: danh-muc category taxonomy with sidebar, replacing tags"
 
 Append to `scripts/test.sh`:
 
+The stylesheet is fingerprinted, so its path must be resolved at runtime. The
+assignment must come **before** the assertion that uses it, and the variable
+must be referenced with `$` — `assert_matches assets_css …` would pass the
+literal string `assets_css` as a filename, and since the helper begins
+`[ -f "$1" ]` that assertion could never pass.
+
 ```bash
-assert_matches assets_css 'grid-template-columns: *repeat\(3, *1fr\)' "grid is three columns"
+assets_css=$(ls public/css/main.min.*.css 2>/dev/null | head -1)
+assert_matches "$assets_css" 'grid-template-columns: *repeat\(3, *1fr\)' "grid is three columns"
 assert_file public/san-pham/page/2/index.html "pagination generates a second page"
 assert_contains public/san-pham/index.html "catalogue-main" "grid page uses the catalogue layout"
 ```
 
-The first needs the built CSS path, which is fingerprinted. Add this helper line immediately above those three assertions:
-
-```bash
-assets_css=$(ls public/css/main.min.*.css 2>/dev/null | head -1)
-```
+The regex tolerates zero-or-more spaces because Hugo's minifier emits
+`grid-template-columns:repeat(3,1fr)` without them.
 
 - [ ] **Step 2: Run to verify it fails**
 
