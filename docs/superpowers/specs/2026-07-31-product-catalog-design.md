@@ -34,6 +34,7 @@ because the owner asked for prices.
 | Front matter keys | Stay English | Templates, tests, and CMS config already agree on them; Hugo fails silently when they drift |
 | CMS labels | Vietnamese | Editing experience without touching the wiring |
 | Category cardinality | Exactly one per product | Sidebar counts sum to the total; unambiguous breadcrumb |
+| Category input | Fixed dropdown, not free text | A typo would silently create a phantom category in the primary navigation |
 | Products per page | 12 | 4 rows of 3; matches the reference's 120/10 |
 | Price | Optional; blank renders **Liên hệ** | Packaging is often quote-based; an empty cell looks broken |
 | Commerce | Out of scope | Catalogue only |
@@ -65,7 +66,7 @@ Keys are English and stable. Labels are what the CMS displays.
 |---|---|---|---|---|
 | `title` | Tên sản phẩm | string | yes | |
 | `code` | Mã sản phẩm | string | no | new |
-| `category` | Danh mục | string | yes | new — single value, drives the sidebar |
+| `category` | Danh mục | select | yes | new — single value, drives the sidebar |
 | `capacity` | Dung tích | string | no | new — e.g. `1000ml` |
 | `material` | Chất liệu | select | no | new — PET / HDPE / PP / PVC |
 | `neck` | Cổ chai | string | no | new — e.g. `24/410` |
@@ -83,6 +84,30 @@ concepts with no meaning for packaging. `tags` is replaced by `category`.
 
 `material` is a select rather than free text so the same material cannot be
 spelled three ways across the catalogue.
+
+`category` is a select for a stronger reason. The sidebar is the catalogue's
+primary navigation, and it is built from whatever category values exist in the
+content. With free text, one typo — `Chai PET` versus `Chai P.E.T` — silently
+creates a phantom category holding a single product, and it stays in the
+sidebar until a human notices. A fixed list makes that failure impossible.
+
+The cost is explicit: adding a category becomes a config edit and a commit
+rather than typing a new value in the CMS. For a set that changes about once a
+year, that is the correct trade.
+
+**The category list** (stored as the front matter value, displayed as the
+label):
+
+| Value | Label |
+|---|---|
+| `chai-pet` | Chai nhựa PET |
+| `chai-hdpe` | Chai nhựa HDPE |
+| `hu-nhua` | Hũ nhựa |
+| `nap-voi` | Nắp & vòi |
+| `can-nhua` | Can nhựa |
+
+Storing a slug rather than the display label keeps `/danh-muc/<slug>/` URLs
+stable if a label is ever reworded.
 
 ### Taxonomy
 
