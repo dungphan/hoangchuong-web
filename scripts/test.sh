@@ -49,6 +49,7 @@ assert_matches public/index.html 'rel=.?canonical' "head emits a canonical link"
 assert_matches public/index.html '<link rel=.?stylesheet.? href=.?/css/main\.min\.[a-f0-9]+\.css' "stylesheet is fingerprinted"
 assert_contains public/index.html "Trang chủ" "header renders nav from settings"
 assert_contains public/index.html "mailto:" "footer renders the contact email"
+assert_contains public/index.html "tel:" "footer renders the phone number"
 assert_matches public/index.html 'srcset=' "image partial emits a srcset"
 assert_matches public/index.html '\.webp' "image partial converts to WebP"
 assert_matches public/index.html 'width=.?[0-9]+.? height=.?[0-9]+' "image partial emits intrinsic dimensions"
@@ -71,7 +72,7 @@ assert_contains public/danh-muc/chai-pet/index.html "Chai nhựa PET 500ML" "ter
 assert_not_contains public/danh-muc/hu-nhua/index.html "Chai nhựa PET 500ML" "term page excludes other categories' products"
 
 assert_file public/gioi-thieu/index.html "about page is generated"
-assert_contains public/gioi-thieu/index.html "Giới thiệu" "about page renders its title"
+assert_contains public/gioi-thieu/index.html "<h1>Giới thiệu</h1>" "about page renders its title"
 assert_contains public/gioi-thieu/index.html "Chúng tôi sản xuất bao bì nhựa PET và HDPE" "about page renders body content"
 
 # --- CMS-field-wins regression (content/gioi-thieu has portrait: "" AND a portrait.jpg
@@ -104,7 +105,7 @@ assert_file public/404.html "404 page is generated"
 assert_contains public/404.html "Không tìm thấy" "404 page is in Vietnamese"
 assert_contains public/index.html "Sản phẩm" "nav is in Vietnamese"
 assert_contains public/index.html "HDPLAS" "home renders the Vietnamese site title"
-assert_contains public/gioi-thieu/index.html "Giới thiệu" "about page is in Vietnamese"
+assert_contains public/gioi-thieu/index.html '<meta property="og:title" content="Giới thiệu">' "about page is in Vietnamese"
 
 echo
 if [ "$FAIL" -eq 0 ]; then
