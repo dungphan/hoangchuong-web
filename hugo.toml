@@ -1,0 +1,15 @@
+baseURL = "https://example.com/"
+locale = "en-us"
+title = "Chuongk48"
+enableRobotsTXT = true
+
+# Taxonomies are switched on in Task 5, together with their templates.
+# Leaving them enabled without templates makes Hugo emit a WARN, which
+# scripts/test.sh treats as a failure.
+disableKinds = ["taxonomy", "term"]
+
+[markup.goldmark.renderer]
+  unsafe = false
+
+[minify]
+  disableHTML = false
