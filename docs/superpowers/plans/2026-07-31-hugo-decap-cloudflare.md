@@ -1233,7 +1233,7 @@ test('/auth redirects to GitHub and sets a state cookie', async () => {
   const loc = new URL(res.headers.get('location'))
   assert.equal(loc.origin + loc.pathname, 'https://github.com/login/oauth/authorize')
   assert.equal(loc.searchParams.get('client_id'), 'test-client-id')
-  assert.equal(loc.searchParams.get('scope'), 'repo')
+  assert.equal(loc.searchParams.get('scope'), 'public_repo')
 
   const state = loc.searchParams.get('state')
   assert.match(state, /^[0-9a-f]{32}$/, 'state must be 128 bits of hex')
@@ -1379,7 +1379,7 @@ export default {
       const state = randomState()
       const target = new URL(GITHUB_AUTHORIZE)
       target.searchParams.set('client_id', env.GITHUB_CLIENT_ID)
-      target.searchParams.set('scope', 'repo')
+      target.searchParams.set('scope', 'public_repo')
       target.searchParams.set('state', state)
       target.searchParams.set('redirect_uri', `${url.origin}/callback`)
 

@@ -115,7 +115,14 @@ export default {
       const state = randomState()
       const target = new URL(GITHUB_AUTHORIZE)
       target.searchParams.set('client_id', env.GITHUB_CLIENT_ID)
-      target.searchParams.set('scope', 'repo')
+      // public_repo, not repo: this site's repository is public, and `repo`
+      // is the only classic scope that reaches PRIVATE repositories — it
+      // would hand the CMS read/write over every private repo on the
+      // account. Classic OAuth Apps cannot scope to a single repository, so
+      // public_repo is the narrowest workable grant here.
+      // If this repository is ever made private, this must go back to
+      // 'repo' and the worker must be redeployed, or login will fail.
+      target.searchParams.set('scope', 'public_repo')
       target.searchParams.set('state', state)
       target.searchParams.set('redirect_uri', `${url.origin}/callback`)
 

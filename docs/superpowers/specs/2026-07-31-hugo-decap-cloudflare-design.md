@@ -54,7 +54,7 @@ GitHub repo
 
 1. Editor opens `/admin` — static files Hugo copies from `static/admin/`.
 2. Decap opens the Worker's `/auth` in a popup.
-3. Worker redirects to GitHub's OAuth consent screen (`scope=repo`, random `state`).
+3. Worker redirects to GitHub's OAuth consent screen (`scope=public_repo`, random `state`).
 4. GitHub redirects to the Worker's `/callback` with a code.
 5. Worker verifies `state`, exchanges the code for a token server-side using the
    client secret, and returns an HTML page that `postMessage`s the token to the

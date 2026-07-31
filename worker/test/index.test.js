@@ -15,7 +15,10 @@ test('/auth redirects to GitHub and sets a state cookie', async () => {
   const loc = new URL(res.headers.get('location'))
   assert.equal(loc.origin + loc.pathname, 'https://github.com/login/oauth/authorize')
   assert.equal(loc.searchParams.get('client_id'), 'test-client-id')
-  assert.equal(loc.searchParams.get('scope'), 'repo')
+  // Must be public_repo, never repo: `repo` reaches every PRIVATE repository
+  // on the account. If this ever regresses to 'repo', the consent screen
+  // silently starts demanding private-repo access and nothing else complains.
+  assert.equal(loc.searchParams.get('scope'), 'public_repo')
 
   const state = loc.searchParams.get('state')
   assert.match(state, /^[0-9a-f]{32}$/, 'state must be 128 bits of hex')

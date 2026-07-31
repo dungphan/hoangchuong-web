@@ -226,6 +226,30 @@ repository.
 
 ---
 
+## OAuth scope: `public_repo`, and what it costs
+
+The Worker requests `scope=public_repo`, not `repo` (`worker/src/index.js`).
+
+Classic OAuth Apps cannot be scoped to a single repository — the scope applies
+to the whole account. `repo` is the only classic scope that reaches **private**
+repositories, so requesting it would grant the CMS read/write over every private
+repo on the account, plus org projects, invitations, team memberships, and
+webhooks. The GitHub consent screen says so in plain language, and it is correct
+to find that alarming for a personal portfolio site.
+
+`public_repo` removes private-repo access entirely. It still grants write access
+to *all* public repositories on the account, not just this one — that is the
+floor for classic OAuth Apps. Genuine per-repository permissions require a
+**GitHub App**, whose user-to-server tokens Decap's `github` backend does not
+support; adopting one means building a custom auth path, not changing a setting.
+
+**Consequence to remember:** if `dungphan/hoangchuong-web` is ever made
+**private**, `public_repo` stops working and login breaks. The fix is to change
+the scope back to `repo` in `worker/src/index.js`, update the assertion in
+`worker/test/index.test.js`, and redeploy the Worker. A test pins the current
+value, so an accidental regression to `repo` fails the suite rather than
+silently widening the consent screen.
+
 ## Warning: `SITE_ORIGIN` is the single most likely failure point
 
 `worker/wrangler.toml`'s `SITE_ORIGIN` must be **scheme + host only, with no
