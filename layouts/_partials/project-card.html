@@ -7,4 +7,11 @@
     <h2>{{ $p.Title }}</h2>
   </a>
   {{- with $p.Params.summary }}<p>{{ . }}</p>{{ end }}
+  {{- with $p.Params.tags }}
+  <ul class="tags">
+    {{- range . }}
+    <li><a href="{{ (printf "/tags/%s/" (urlize .)) | relURL }}">{{ . }}</a></li>
+    {{- end }}
+  </ul>
+  {{- end }}
 </article>

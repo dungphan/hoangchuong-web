@@ -61,6 +61,11 @@ assert_matches public/projects/demo-project/index.html 'width=.?300.? height=.?1
 assert_no_draft() { if [ -d public/projects/hidden-draft ]; then fail "draft project is excluded from build"; else pass "draft project is excluded from build"; fi; }
 assert_no_draft
 
+assert_file public/tags/index.html "tag index page is generated"
+assert_file public/tags/branding/index.html "tag term page is generated"
+assert_contains public/tags/branding/index.html "Demo Project" "term page lists tagged projects"
+assert_contains public/projects/index.html "/tags/branding/" "grid card links to tag pages"
+
 echo
 if [ "$FAIL" -eq 0 ]; then
   printf '\033[32mALL PASS\033[0m\n'
