@@ -10,8 +10,8 @@ gallery:
   - image: shot-02.jpg
     caption: Chi tiết nắp
 danh-muc: hu-nhua
-code: HD-500
-capacity: 500ml
+code: HD-1000
+capacity: 1000ml
 material: PET
 neck: 24/410
 price: 125000

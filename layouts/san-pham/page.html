@@ -2,6 +2,20 @@
 <article>
   <h1>{{ .Title }}</h1>
   {{ partial "price.html" . }}
+  {{- with hugo.Data.settings }}
+    {{- $s := . }}
+    {{- if or $s.contact_email $s.phone }}
+  <div class="contact-prompt">
+    <p>Liên hệ để nhận báo giá:</p>
+    {{- with $s.contact_email }}
+    <a href="mailto:{{ . }}">{{ . }}</a>
+    {{- end }}
+    {{- with $s.phone }}
+    <a href="tel:{{ replace . " " "" }}">{{ . }}</a>
+    {{- end }}
+  </div>
+    {{- end }}
+  {{- end }}
   <dl class="specs">
     {{- with .Params.code }}<div><dt>Mã sản phẩm</dt><dd>{{ . }}</dd></div>{{ end }}
     {{- with .Params.capacity }}<div><dt>Dung tích</dt><dd>{{ . }}</dd></div>{{ end }}
