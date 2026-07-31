@@ -66,6 +66,10 @@ assert_file public/tags/branding/index.html "tag term page is generated"
 assert_contains public/tags/branding/index.html "Demo Project" "term page lists tagged projects"
 assert_contains public/projects/index.html "/tags/branding/" "grid card links to tag pages"
 
+assert_file public/about/index.html "about page is generated"
+assert_contains public/about/index.html "About" "about page renders its title"
+assert_contains public/about/index.html "studio based in" "about page renders body content"
+
 echo
 if [ "$FAIL" -eq 0 ]; then
   printf '\033[32mALL PASS\033[0m\n'
