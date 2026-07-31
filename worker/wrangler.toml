@@ -3,5 +3,7 @@ main = "src/index.js"
 compatibility_date = "2026-07-01"
 
 [vars]
-GITHUB_CLIENT_ID = "PLACEHOLDER_CLIENT_ID"
-SITE_ORIGIN = "https://PLACEHOLDER.pages.dev"
+GITHUB_CLIENT_ID = "Ov23liB1trqdtFcACdli"
+# Scheme + host only. A trailing slash, a path, or an explicit :443 all make
+# isExactOrigin reject this and return a 500 on /callback.
+SITE_ORIGIN = "https://hoangchuong-web.pages.dev"
