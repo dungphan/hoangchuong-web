@@ -9,8 +9,10 @@
   <p><a href="{{ . }}" rel="noopener noreferrer" target="_blank">Visit project &rarr;</a></p>
   {{- end }}
 
-  {{- with .Resources.GetMatch (.Params.cover | default "cover.*") }}
-    {{ partial "image.html" (dict "img" . "alt" $.Title "loading" "eager" "sizes" "(max-width: 68rem) 100vw, 68rem") }}
+  {{- with .Params.cover }}
+    {{- with $.Resources.GetMatch . }}
+      {{ partial "image.html" (dict "img" . "alt" $.Title "loading" "eager" "sizes" "(max-width: 68rem) 100vw, 68rem") }}
+    {{- end }}
   {{- end }}
 
   <div class="body">{{ .Content }}</div>

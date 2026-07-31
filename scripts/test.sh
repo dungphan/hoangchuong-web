@@ -70,6 +70,11 @@ assert_file public/about/index.html "about page is generated"
 assert_contains public/about/index.html "About" "about page renders its title"
 assert_contains public/about/index.html "studio based in" "about page renders body content"
 
+# --- CMS-field-wins regression (content/about has portrait: "" AND a portrait.jpg
+# sitting in its bundle; an empty/absent field must win over any glob fallback) ---
+assert_not_contains public/about/index.html "<img" "empty portrait field renders no image, even though content/about/portrait.jpg exists in the bundle"
+assert_file content/about/portrait.jpg "regression fixture: portrait.jpg is present in the about bundle"
+
 echo
 if [ "$FAIL" -eq 0 ]; then
   printf '\033[32mALL PASS\033[0m\n'

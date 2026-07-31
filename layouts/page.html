@@ -1,8 +1,10 @@
 {{ define "main" }}
 <article>
   <h1>{{ .Title }}</h1>
-  {{- with .Resources.GetMatch (.Params.portrait | default "portrait.*") }}
-    {{ partial "image.html" (dict "img" . "alt" $.Title "sizes" "(max-width: 30rem) 100vw, 30rem") }}
+  {{- with .Params.portrait }}
+    {{- with $.Resources.GetMatch . }}
+      {{ partial "image.html" (dict "img" . "alt" $.Title "sizes" "(max-width: 30rem) 100vw, 30rem") }}
+    {{- end }}
   {{- end }}
   <div class="body">{{ .Content }}</div>
 </article>

@@ -1,8 +1,10 @@
 {{ define "main" }}
 <h1>{{ with .Params.hero_heading }}{{ . }}{{ else }}{{ hugo.Data.settings.site_title }}{{ end }}</h1>
 {{ with .Params.hero_subheading }}<p>{{ . }}</p>{{ end }}
-{{ with .Resources.GetMatch (.Params.hero_image | default "hero.*") }}
-  {{ partial "image.html" (dict "img" . "alt" $.Params.hero_heading "loading" "eager" "sizes" "(max-width: 68rem) 100vw, 68rem") }}
+{{ with .Params.hero_image }}
+  {{ with $.Resources.GetMatch . }}
+    {{ partial "image.html" (dict "img" . "alt" $.Params.hero_heading "loading" "eager" "sizes" "(max-width: 68rem) 100vw, 68rem") }}
+  {{ end }}
 {{ end }}
 {{ .Content }}
 {{ end }}
