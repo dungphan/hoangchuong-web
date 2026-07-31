@@ -1,0 +1,14 @@
+{{- $s := hugo.Data.settings -}}
+<footer class="site-footer">
+  <div class="wrap">
+    <small>&copy; {{ now.Year }} {{ $s.site_title }}</small>
+    <nav>
+      {{- with $s.contact_email }}
+      <a href="mailto:{{ . }}">Email</a>
+      {{- end }}
+      {{- range $s.social }}
+      <a href="{{ .url }}" rel="noopener noreferrer" target="_blank">{{ .platform }}</a>
+      {{- end }}
+    </nav>
+  </div>
+</footer>

@@ -1,0 +1,11 @@
+{{- $s := hugo.Data.settings -}}
+<header class="site-header">
+  <div class="wrap">
+    <a href="{{ "/" | relURL }}"><strong>{{ $s.site_title }}</strong></a>
+    <nav>
+      {{- range $s.nav }}
+      <a href="{{ .url | relURL }}">{{ .label }}</a>
+      {{- end }}
+    </nav>
+  </div>
+</header>

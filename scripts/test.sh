@@ -38,6 +38,12 @@ echo "==> Assertions"
 # --- assertions ---
 assert_file public/index.html "home page is generated"
 assert_contains public/index.html "Chuongk48" "home page renders the site title"
+assert_matches public/index.html '<meta name=.?description' "head emits a description meta tag"
+assert_matches public/index.html '<meta property=.?og:title' "head emits OpenGraph title"
+assert_matches public/index.html 'rel=.?canonical' "head emits a canonical link"
+assert_matches public/index.html '<link rel=.?stylesheet.? href=.?/css/main\.min\.[a-f0-9]+\.css' "stylesheet is fingerprinted"
+assert_contains public/index.html "Projects" "header renders nav from settings"
+assert_contains public/index.html "mailto:" "footer renders the contact email"
 
 echo
 if [ "$FAIL" -eq 0 ]; then

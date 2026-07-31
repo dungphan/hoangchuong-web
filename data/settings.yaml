@@ -1,0 +1,12 @@
+site_title: Chuongk48
+description: Selected work and projects.
+og_image: ""
+contact_email: hello@example.com
+nav:
+  - label: Projects
+    url: /projects/
+  - label: About
+    url: /about/
+social:
+  - platform: GitHub
+    url: https://github.com/
