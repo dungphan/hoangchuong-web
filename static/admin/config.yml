@@ -1,0 +1,102 @@
+backend:
+  name: github
+  repo: dungphan/hoangchuong-web
+  branch: main
+  base_url: https://PLACEHOLDER_WORKER.workers.dev
+  auth_endpoint: auth
+
+local_backend: true
+
+media_folder: static/images/uploads
+public_folder: /images/uploads
+
+collections:
+  - name: projects
+    label: Projects
+    label_singular: Project
+    folder: content/projects
+    path: "{{slug}}/index"
+    media_folder: ""
+    public_folder: ""
+    create: true
+    slug: "{{slug}}"
+    summary: "{{title}} — {{year}}"
+    sortable_fields: [weight, date, title]
+    view_filters:
+      - label: Drafts only
+        field: draft
+        pattern: true
+    fields:
+      - { label: Title, name: title, widget: string }
+      - { label: Date, name: date, widget: datetime }
+      - { label: Draft, name: draft, widget: boolean, default: true }
+      - { label: Summary, name: summary, widget: text }
+      - { label: Cover image, name: cover, widget: image }
+      - label: Gallery
+        name: gallery
+        widget: list
+        required: false
+        fields:
+          - { label: Image, name: image, widget: image }
+          - { label: Caption, name: caption, widget: string, required: false }
+      - { label: Tags, name: tags, widget: list, required: false }
+      - { label: Client, name: client, widget: string, required: false }
+      - { label: Year, name: year, widget: number, required: false, value_type: int }
+      - { label: External URL, name: external_url, widget: string, required: false }
+      - { label: Order weight, name: weight, widget: number, required: false, value_type: int }
+      - { label: Body, name: body, widget: markdown, required: false }
+
+  - name: pages
+    label: Pages
+    files:
+      - name: home
+        label: Home page
+        file: content/_index.md
+        media_folder: ""
+        public_folder: ""
+        fields:
+          - { label: Title, name: title, widget: string }
+          - { label: Hero heading, name: hero_heading, widget: string }
+          - { label: Hero subheading, name: hero_subheading, widget: text, required: false }
+          - { label: Hero image, name: hero_image, widget: image, required: false }
+          - { label: Body, name: body, widget: markdown, required: false }
+      - name: about
+        label: About page
+        file: content/about/index.md
+        media_folder: ""
+        public_folder: ""
+        fields:
+          - { label: Title, name: title, widget: string }
+          - { label: Portrait, name: portrait, widget: image, required: false }
+          - { label: Body, name: body, widget: markdown, required: false }
+      - name: projects_landing
+        label: Projects landing
+        file: content/projects/_index.md
+        fields:
+          - { label: Title, name: title, widget: string }
+          - { label: Intro, name: intro, widget: text, required: false }
+
+  - name: settings
+    label: Settings
+    files:
+      - name: site
+        label: Site settings
+        file: data/settings.yaml
+        fields:
+          - { label: Site title, name: site_title, widget: string }
+          - { label: Description, name: description, widget: text }
+          - { label: Default share image, name: og_image, widget: image, required: false }
+          - { label: Contact email, name: contact_email, widget: string, required: false }
+          - label: Navigation
+            name: nav
+            widget: list
+            fields:
+              - { label: Label, name: label, widget: string }
+              - { label: URL, name: url, widget: string }
+          - label: Social links
+            name: social
+            widget: list
+            required: false
+            fields:
+              - { label: Platform, name: platform, widget: string }
+              - { label: URL, name: url, widget: string }

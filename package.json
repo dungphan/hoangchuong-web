@@ -1,0 +1,13 @@
+{
+  "name": "chuongk48-web",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "hugo server -D",
+    "cms": "decap-server",
+    "test": "./scripts/test.sh"
+  },
+  "devDependencies": {
+    "decap-server": "3.10.0"
+  }
+}

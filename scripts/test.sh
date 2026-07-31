@@ -75,6 +75,13 @@ assert_contains public/about/index.html "studio based in" "about page renders bo
 assert_not_contains public/about/index.html "<img" "empty portrait field renders no image, even though content/about/portrait.jpg exists in the bundle"
 assert_file content/about/portrait.jpg "regression fixture: portrait.jpg is present in the about bundle"
 
+assert_file public/admin/index.html "admin page is published"
+assert_file public/admin/config.yml "admin config is published"
+assert_contains public/admin/index.html "decap-cms@3.15.1" "Decap is pinned to an exact version"
+assert_not_contains public/admin/index.html "decap-cms@^3" "Decap is not loaded from a floating range"
+assert_contains public/admin/config.yml "external_url" "config exposes every project field"
+assert_contains public/admin/config.yml "local_backend" "local backend is enabled for offline editing"
+
 echo
 if [ "$FAIL" -eq 0 ]; then
   printf '\033[32mALL PASS\033[0m\n'
