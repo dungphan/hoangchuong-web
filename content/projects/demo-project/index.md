@@ -7,6 +7,8 @@ cover: cover.jpg
 gallery:
   - image: shot-01.jpg
     caption: A caption for the first gallery image.
+  - image: shot-02.jpg
+    caption: A small behind-the-scenes snapshot.
 tags:
   - branding
   - print
