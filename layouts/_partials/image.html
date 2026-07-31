@@ -10,7 +10,11 @@
       {{- $srcset = $srcset | append (printf "%s %dw" $r.RelPermalink .) -}}
     {{- end -}}
   {{- end -}}
-  {{- $base := $img.Resize "800x webp q80" -}}
+  {{- $baseWidth := $img.Width -}}
+  {{- if gt $baseWidth 800 -}}
+    {{- $baseWidth = 800 -}}
+  {{- end -}}
+  {{- $base := $img.Resize (printf "%dx webp q80" $baseWidth) -}}
   <img src="{{ $base.RelPermalink }}"
     {{- with $srcset }} srcset="{{ delimit . ", " }}" sizes="{{ $sizes }}"{{ end }}
     width="{{ $base.Width }}" height="{{ $base.Height }}"

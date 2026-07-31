@@ -5,4 +5,10 @@
   {{ partial "image.html" (dict "img" . "alt" $.Params.hero_heading "loading" "eager" "sizes" "(max-width: 68rem) 100vw, 68rem") }}
 {{ end }}
 {{ .Content }}
+{{/* Regression fixture: hero-small.jpg is a 300x168 source (sub-800px, sub-400px),
+     used by scripts/test.sh to assert the image partial never upscales past the
+     source's intrinsic dimensions. Not part of the visual design. */}}
+{{ with .Resources.GetMatch "hero-small.*" }}
+  <div hidden data-test="image-partial-regression">{{ partial "image.html" (dict "img" . "alt" "regression test fixture") }}</div>
+{{ end }}
 {{ end }}

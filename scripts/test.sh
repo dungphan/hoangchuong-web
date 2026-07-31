@@ -48,6 +48,7 @@ assert_matches public/index.html 'srcset=' "image partial emits a srcset"
 assert_matches public/index.html '\.webp' "image partial converts to WebP"
 assert_matches public/index.html 'width=.?[0-9]+.? height=.?[0-9]+' "image partial emits intrinsic dimensions"
 assert_contains public/index.html 'decoding=async' "image partial sets async decoding"
+assert_matches public/index.html 'width=.?300.? height=.?168' "image partial does not upscale a sub-800px source (regression)"
 
 echo
 if [ "$FAIL" -eq 0 ]; then
