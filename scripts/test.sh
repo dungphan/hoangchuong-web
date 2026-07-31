@@ -21,7 +21,12 @@ assert_not_contains() {
 
 echo "==> Building"
 BUILD_LOG=$(mktemp)
-if ! hugo --gc --minify > "$BUILD_LOG" 2>&1; then
+# --cleanDestinationDir is load-bearing: Hugo does not purge public/ between
+# builds, so a directory left behind by an earlier `hugo server -D` or `-D`
+# build survives into a production build. Without this flag the
+# "draft project is excluded" assertion tests accumulated disk state rather
+# than what this build actually produced, and false-fails.
+if ! hugo --gc --minify --cleanDestinationDir > "$BUILD_LOG" 2>&1; then
   cat "$BUILD_LOG"
   echo "BUILD FAILED"
   exit 1
