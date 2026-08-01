@@ -1,48 +1,60 @@
 {{ define "main" }}
-<article>
-  <h1>{{ .Title }}</h1>
-  {{ partial "price.html" . }}
-  {{- with hugo.Data.settings }}
-    {{- $s := . }}
-    {{- if or $s.contact_email $s.phone }}
-  <div class="contact-prompt">
-    <p>Liên hệ để nhận báo giá:</p>
-    {{- with $s.contact_email }}
-    <a href="mailto:{{ . }}">{{ . }}</a>
-    {{- end }}
-    {{- with $s.phone }}
-    <a href="tel:{{ replace . " " "" }}">{{ . }}</a>
-    {{- end }}
-  </div>
-    {{- end }}
-  {{- end }}
-  <dl class="specs">
-    {{- with .Params.code }}<div><dt>Mã sản phẩm</dt><dd>{{ . }}</dd></div>{{ end }}
-    {{- with .Params.capacity }}<div><dt>Dung tích</dt><dd>{{ . }}</dd></div>{{ end }}
-    {{- with .Params.material }}<div><dt>Chất liệu</dt><dd>{{ . }}</dd></div>{{ end }}
-    {{- with .Params.neck }}<div><dt>Cổ chai</dt><dd>{{ . }}</dd></div>{{ end }}
-  </dl>
-
-  {{- with .Params.cover }}
-    {{- with $.Resources.GetMatch . }}
-      {{ partial "image.html" (dict "img" . "alt" $.Title "loading" "eager" "sizes" "(max-width: 68rem) 100vw, 68rem") }}
-    {{- end }}
-  {{- end }}
-
-  <div class="body">{{ .Content }}</div>
-
-  {{- with .Params.gallery }}
-  <div class="gallery">
-    {{- range . }}
-      {{- $item := . }}
-      {{- with $.Resources.GetMatch $item.image }}
-      <figure>
-        {{ partial "image.html" (dict "img" . "alt" ($item.caption | default $.Title) "sizes" "(max-width: 44rem) 100vw, 44rem") }}
-        {{- with $item.caption }}<figcaption>{{ . }}</figcaption>{{ end }}
-      </figure>
+<article class="product">
+  <div class="product-media">
+    {{- with .Params.cover }}
+      {{- with $.Resources.GetMatch . }}
+    <div class="shot">
+      {{ partial "image.html" (dict "img" . "alt" $.Title "loading" "eager" "sizes" "(max-width: 62rem) 100vw, 40rem") }}
+    </div>
       {{- end }}
     {{- end }}
+
+    {{- with .Params.gallery }}
+    <div class="gallery">
+      {{- range . }}
+        {{- $item := . }}
+        {{- with $.Resources.GetMatch $item.image }}
+        <figure>
+          <div class="shot">
+            {{ partial "image.html" (dict "img" . "alt" ($item.caption | default $.Title) "sizes" "(max-width: 62rem) 50vw, 20rem") }}
+          </div>
+          {{- with $item.caption }}<figcaption>{{ . }}</figcaption>{{ end }}
+        </figure>
+        {{- end }}
+      {{- end }}
+    </div>
+    {{- end }}
   </div>
-  {{- end }}
+
+  <div class="product-info">
+    {{- with .Params.code }}<span class="code">{{ . }}</span>{{ end }}
+    <h1>{{ .Title }}</h1>
+    {{ partial "price.html" . }}
+
+    {{- /* The datasheet: label left, measured value right in mono. */ -}}
+    <dl class="specs">
+      {{- with .Params.code }}<div><dt>Mã sản phẩm</dt><dd>{{ . }}</dd></div>{{ end }}
+      {{- with .Params.capacity }}<div><dt>Dung tích</dt><dd>{{ . }}</dd></div>{{ end }}
+      {{- with .Params.material }}<div><dt>Chất liệu</dt><dd>{{ . }}</dd></div>{{ end }}
+      {{- with .Params.neck }}<div><dt>Cổ chai</dt><dd>{{ . }}</dd></div>{{ end }}
+    </dl>
+
+    {{- with hugo.Data.settings }}
+      {{- $s := . }}
+      {{- if or $s.contact_email $s.phone }}
+    <div class="contact-prompt">
+      <p>Liên hệ để nhận báo giá:</p>
+      {{- with $s.contact_email }}
+      <a href="mailto:{{ . }}">{{ . }}</a>
+      {{- end }}
+      {{- with $s.phone }}
+      <a href="tel:{{ replace . " " "" }}">{{ . }}</a>
+      {{- end }}
+    </div>
+      {{- end }}
+    {{- end }}
+
+    {{- with .Content }}<div class="body">{{ . }}</div>{{ end }}
+  </div>
 </article>
 {{ end }}

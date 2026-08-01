@@ -1,76 +1,308 @@
+/* Self-hosted so the site makes no third-party request. Vietnamese subset
+   first: Be Vietnam Pro is drawn for this language, and most display faces
+   render ộ ữ ế ị badly or not at all. */
+@font-face {
+  font-family: 'Be Vietnam Pro';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/be-vietnam-pro-400-vietnamese.woff2') format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+}
+@font-face {
+  font-family: 'Be Vietnam Pro';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/be-vietnam-pro-400-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Be Vietnam Pro';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url('/fonts/be-vietnam-pro-600-vietnamese.woff2') format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+}
+@font-face {
+  font-family: 'Be Vietnam Pro';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url('/fonts/be-vietnam-pro-600-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Be Vietnam Pro';
+  font-style: normal;
+  font-weight: 800;
+  font-display: swap;
+  src: url('/fonts/be-vietnam-pro-800-vietnamese.woff2') format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+}
+@font-face {
+  font-family: 'Be Vietnam Pro';
+  font-style: normal;
+  font-weight: 800;
+  font-display: swap;
+  src: url('/fonts/be-vietnam-pro-800-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'IBM Plex Mono';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url('/fonts/ibm-plex-mono-500-vietnamese.woff2') format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+}
+@font-face {
+  font-family: 'IBM Plex Mono';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url('/fonts/ibm-plex-mono-500-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+/* ============================================================
+   HDPLAS — the mould drawing
+   Buyers arrive knowing they need 250ml, HDPE, 24/410. The design
+   makes that data the loudest thing on the page instead of dressing
+   the catalogue as a shop. Palette is taken from the materials: the
+   pale blue-grey of clear PET, the blue-grey of mould steel, and a
+   deep cyan that reads food-safe — which is what this factory sells into.
+   ============================================================ */
 :root {
-  --ink: #16161a;
-  --muted: #6b7280;
-  --bg: #ffffff;
-  --rule: #e5e7eb;
-  --max: 68rem;
+  --ink:    #0d1418;
+  --paper:  #ffffff;
+  --wash:   #eff3f6;
+  --line:   #d8e0e6;
+  --steel:  #5f7280;
+  --mark:   #00707f;
+  --mark-2: #e8f4f5;
+  --max: 74rem;
+
+  --display: 'Be Vietnam Pro', system-ui, sans-serif;
+  --mono: 'IBM Plex Mono', ui-monospace, monospace;
 }
 @media (prefers-color-scheme: dark) {
-  :root { --ink: #ededf0; --muted: #9ca3af; --bg: #101014; --rule: #2a2a32; }
+  :root {
+    --ink: #eef2f4; --paper: #0b1014; --wash: #131b21;
+    --line: #23303a; --steel: #93a5b1; --mark: #4fc4d4; --mark-2: #10262b;
+  }
 }
 * { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
 body {
   margin: 0;
-  background: var(--bg);
+  background: var(--paper);
   color: var(--ink);
-  font: 16px/1.6 system-ui, -apple-system, "Segoe UI", sans-serif;
+  font: 400 16px/1.65 var(--display);
+  font-feature-settings: 'kern' 1;
 }
 img { max-width: 100%; height: auto; display: block; }
 a { color: inherit; }
-.wrap { max-width: var(--max); margin: 0 auto; padding: 0 1.25rem; }
-.site-header, .site-footer { border-bottom: 1px solid var(--rule); }
-.site-footer { border-bottom: 0; border-top: 1px solid var(--rule); margin-top: 4rem; }
-.site-header .wrap, .site-footer .wrap {
-  display: flex; gap: 1.5rem; align-items: baseline;
-  justify-content: space-between; padding-top: 1.25rem; padding-bottom: 1.25rem;
-}
-.site-header nav a { margin-left: 1.25rem; text-decoration: none; }
-.site-header nav a:hover { text-decoration: underline; }
-.catalogue { display: grid; grid-template-columns: 15rem 1fr; gap: 2.5rem; align-items: start; padding: 2rem 0; }
-.grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem; }
-.sidebar h2 { font-size: 1rem; margin: 0 0 0.75rem; }
-.sidebar ul { list-style: none; margin: 0; padding: 0; }
-.sidebar li { margin: 0 0 0.5rem; }
-.sidebar a { text-decoration: none; font-size: 0.95rem; }
-.sidebar a:hover { text-decoration: underline; }
-.sidebar .count { color: var(--muted); font-size: 0.85rem; }
-.price { display: block; font-weight: 600; margin-top: 0.25rem; }
-.price-contact { color: var(--muted); font-weight: 500; }
-.specs { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.5rem 1.5rem; margin: 1.5rem 0; }
-.specs dt { color: var(--muted); font-size: 0.85rem; }
-.specs dd { margin: 0; }
-.pagination { display: flex; gap: 0.5rem; list-style: none; padding: 2rem 0 0; }
-.pagination a, .pagination span { padding: 0.4rem 0.75rem; border: 1px solid var(--rule); border-radius: 4px; text-decoration: none; }
-.pagination .active a { background: var(--ink); color: var(--bg); }
-
-@media (max-width: 60rem) {
-  .catalogue { grid-template-columns: 1fr; }
-  .grid { grid-template-columns: repeat(2, 1fr); }
-}
-@media (max-width: 34rem) {
-  .grid { grid-template-columns: 1fr; }
-}
+:focus-visible { outline: 2px solid var(--mark); outline-offset: 2px; }
+.wrap { max-width: var(--max); margin: 0 auto; padding: 0 1.5rem; }
 .visually-hidden {
   position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
   overflow: hidden; clip-path: inset(50%); white-space: nowrap; border: 0;
 }
-.product-search { margin: 1.5rem 0 0.5rem; }
+
+/* Data type. Codes, capacities and neck sizes are set in mono at sizes
+   normally kept for headings — the deliberate risk of this design. */
+.data {
+  font-family: var(--mono); font-weight: 500;
+  font-variant-numeric: tabular-nums; letter-spacing: -0.01em;
+}
+.eyebrow {
+  font-family: var(--mono); font-weight: 500; font-size: 0.7rem;
+  letter-spacing: 0.14em; text-transform: uppercase; color: var(--steel);
+  margin: 0 0 0.75rem;
+}
+
+/* ---------- chrome ---------- */
+.site-header { border-bottom: 1px solid var(--line); background: var(--paper); }
+.site-header .wrap {
+  display: flex; gap: 2rem; align-items: center;
+  justify-content: space-between; padding-top: 1.1rem; padding-bottom: 1.1rem;
+}
+.site-header .brand {
+  font-weight: 800; font-size: 1.2rem; letter-spacing: -0.03em;
+  text-decoration: none;
+}
+.site-header nav { display: flex; flex-wrap: wrap; gap: 1.6rem; }
+.site-header nav a {
+  text-decoration: none; font-size: 0.9rem; font-weight: 600; color: var(--steel);
+  padding-bottom: 2px; border-bottom: 2px solid transparent;
+}
+.site-header nav a:hover { color: var(--ink); border-bottom-color: var(--mark); }
+
+.site-footer { border-top: 1px solid var(--line); margin-top: 5rem; background: var(--wash); }
+.site-footer .wrap {
+  display: flex; flex-wrap: wrap; gap: 1rem 2rem; align-items: baseline;
+  justify-content: space-between; padding-top: 2rem; padding-bottom: 2rem;
+}
+.site-footer nav { display: flex; flex-wrap: wrap; gap: 1.5rem; }
+.site-footer a { font-size: 0.9rem; }
+.site-footer small { color: var(--steel); font-size: 0.85rem; }
+
+/* ---------- headings ---------- */
+h1, h2, h3 { letter-spacing: -0.035em; line-height: 1.08; margin: 0; }
+h1 { font-weight: 800; font-size: clamp(2rem, 5.5vw, 3.4rem); }
+h2 { font-weight: 800; font-size: clamp(1.4rem, 3vw, 1.9rem); }
+main > h1 { margin: 2.5rem 0 0.75rem; }
+main > h1 + p { color: var(--steel); font-size: 1.05rem; max-width: 46rem; margin: 0 0 1rem; }
+
+/* ---------- home ---------- */
+.hero { padding: clamp(2.5rem, 7vw, 5rem) 0 0; }
+.hero h1 { max-width: 18ch; }
+.hero .lede {
+  color: var(--steel); font-size: clamp(1rem, 2vw, 1.15rem);
+  max-width: 44ch; margin: 1.25rem 0 0;
+}
+.hero-figure { position: relative; margin: clamp(2rem, 5vw, 3.5rem) 0 0; }
+.hero-figure img { width: 100%; }
+
+/* The signature: dimension callouts, as a mould drawing annotates a part.
+   Each one states a real capacity, so it is information rather than decoration. */
+.dimension {
+  display: grid; grid-template-columns: repeat(3, 1fr);
+  border-top: 1px solid var(--ink); margin-top: -1px;
+}
+.dimension div {
+  position: relative; padding: 0.9rem 0 0; text-align: center;
+}
+.dimension div::before {
+  content: ''; position: absolute; top: -7px; left: 50%;
+  width: 1px; height: 14px; background: var(--ink);
+}
+.dimension div + div { border-left: 1px solid var(--line); }
+.dimension .v { display: block; font-size: clamp(1.1rem, 2.6vw, 1.5rem); color: var(--mark); }
+.dimension .k {
+  display: block; font-family: var(--mono); font-size: 0.68rem; font-weight: 500;
+  letter-spacing: 0.12em; text-transform: uppercase; color: var(--steel); margin-top: 0.3rem;
+}
+
+.capability {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px;
+  background: var(--line); border: 1px solid var(--line);
+  margin: clamp(2.5rem, 6vw, 4rem) 0 0;
+}
+.capability div { background: var(--paper); padding: 1.4rem 1.25rem; }
+.capability .v { display: block; font-size: 1.25rem; color: var(--ink); }
+.capability .k {
+  display: block; font-size: 0.78rem; color: var(--steel); margin-top: 0.35rem;
+}
+
+.home-cats { margin: clamp(3rem, 7vw, 4.5rem) 0 0; }
+.cat-list {
+  list-style: none; margin: 1.5rem 0 0; padding: 0;
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(10rem, 1fr)); gap: 1px;
+  background: var(--line); border: 1px solid var(--line);
+}
+.cat-list a {
+  display: block; background: var(--paper); padding: 1.25rem 1rem;
+  text-decoration: none; height: 100%;
+}
+.cat-list a:hover { background: var(--mark-2); }
+.cat-list .n { font-family: var(--mono); font-weight: 500; font-size: 0.75rem; color: var(--mark); }
+.cat-list .l { display: block; font-weight: 600; font-size: 0.95rem; margin-top: 0.5rem; }
+
+/* ---------- catalogue ---------- */
+.catalogue { display: grid; grid-template-columns: 15rem 1fr; gap: 3rem; align-items: start; padding: 2rem 0 0; }
+.grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--line); border: 1px solid var(--line); }
+
+.sidebar h2 { font-size: 0.72rem; font-family: var(--mono); font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; color: var(--steel); margin: 0 0 1rem; }
+.sidebar ul { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--line); }
+.sidebar li { border-bottom: 1px solid var(--line); }
+.sidebar a {
+  display: flex; justify-content: space-between; gap: 0.75rem; align-items: baseline;
+  text-decoration: none; font-size: 0.92rem; font-weight: 600; padding: 0.7rem 0;
+}
+.sidebar a:hover { color: var(--mark); }
+.sidebar .count { font-family: var(--mono); font-weight: 500; font-size: 0.8rem; color: var(--steel); }
+
+/* Card: image well, then the spec line, then the name. The code leads because
+   that is what a buyer matches against. */
+.card { background: var(--paper); display: flex; flex-direction: column; }
+.card > a { text-decoration: none; display: flex; flex-direction: column; flex: 1; }
+.card .meta-line { display: flex; flex-direction: column; flex: 1; }
+.card .shot { background: var(--wash); padding: 1rem; }
+.card .meta-line { padding: 1rem 1.1rem 0; }
+.card .code { font-family: var(--mono); font-weight: 500; font-size: 0.78rem; color: var(--mark); }
+.card h2 { font-size: 1rem; font-weight: 600; letter-spacing: -0.02em; line-height: 1.3; margin: 0.4rem 0 0; min-height: 2.6em; }
+.card .spec {
+  font-family: var(--mono); font-weight: 500; font-size: 0.75rem; color: var(--steel);
+  margin: 0.55rem 0 0; display: block;
+}
+.card .price { display: block; font-family: var(--mono); font-weight: 500; font-size: 0.95rem; margin: auto 0 1.1rem; padding-top: 0.7rem; }
+.card .price-contact { color: var(--steel); }
+.card > p { color: var(--steel); margin: 0.5rem 1.1rem 1.1rem; font-size: 0.85rem; line-height: 1.5; }
+.card:hover .shot { background: var(--mark-2); }
+
+.product-search { margin: 1.5rem 0 0.35rem; }
 .product-search input {
-  width: 100%; max-width: 30rem; padding: 0.7rem 0.9rem;
-  font: inherit; color: var(--ink); background: var(--bg);
-  border: 1px solid var(--rule); border-radius: 0.4rem;
+  width: 100%; padding: 0.85rem 1rem; font: 500 0.95rem var(--mono);
+  color: var(--ink); background: var(--paper);
+  border: 1px solid var(--line); border-radius: 0;
 }
-.product-search input:focus-visible {
-  outline: 2px solid var(--ink); outline-offset: 1px; border-color: transparent;
+.product-search input::placeholder { color: var(--steel); }
+.product-search input:focus-visible { outline: 2px solid var(--mark); outline-offset: -2px; border-color: transparent; }
+.search-status { font-family: var(--mono); font-weight: 500; color: var(--steel); font-size: 0.78rem; margin: 0 0 0.9rem; min-height: 1.4em; }
+
+.pagination { display: flex; gap: 1px; list-style: none; padding: 0; margin: 2rem 0 0; }
+.pagination a, .pagination span {
+  display: block; padding: 0.5rem 0.85rem; border: 1px solid var(--line);
+  text-decoration: none; font-family: var(--mono); font-weight: 500; font-size: 0.85rem;
 }
-.search-status { color: var(--muted); font-size: 0.9rem; margin: 0 0 0.5rem; min-height: 1.4em; }
-.card h2 { font-size: 1.05rem; margin: 0.75rem 0 0.25rem; }
-.card p { color: var(--muted); margin: 0; font-size: 0.925rem; }
-.card a { text-decoration: none; }
-.tags { list-style: none; display: flex; flex-wrap: wrap; gap: 0.5rem; padding: 0; margin: 0.75rem 0 0; }
-.tags a { font-size: 0.8rem; color: var(--muted); }
-.meta { display: flex; gap: 1.5rem; color: var(--muted); font-size: 0.9rem; }
-.meta dt { font-weight: 600; }
-.meta dd { margin: 0; }
-figure { margin: 2rem 0; }
-figcaption { color: var(--muted); font-size: 0.875rem; margin-top: 0.5rem; }
+.pagination .active a { background: var(--ink); color: var(--paper); border-color: var(--ink); }
+.pagination .disabled span { color: var(--line); }
+
+/* ---------- product detail ---------- */
+.product { display: grid; grid-template-columns: 1.15fr 1fr; gap: 3.5rem; align-items: start; padding: 2.5rem 0 0; }
+.product-media .shot { background: var(--wash); padding: 1rem; }
+.product h1 { font-size: clamp(1.6rem, 3.4vw, 2.2rem); margin: 0.5rem 0 0; }
+.product .code { font-family: var(--mono); font-weight: 500; font-size: 0.85rem; color: var(--mark); }
+.product .price { display: block; font-family: var(--mono); font-weight: 500; font-size: 1.6rem; margin: 1.25rem 0 0; }
+.product .price-contact { color: var(--steel); font-size: 1.25rem; }
+
+/* The datasheet. Hairline rows, label left, value right in mono. */
+.specs { margin: 1.75rem 0 0; border-top: 1px solid var(--ink); }
+.specs div { display: flex; justify-content: space-between; gap: 1.5rem; padding: 0.7rem 0; border-bottom: 1px solid var(--line); }
+.specs dt { color: var(--steel); font-size: 0.88rem; }
+.specs dd { margin: 0; font-family: var(--mono); font-weight: 500; font-size: 0.88rem; }
+
+.contact-prompt { margin: 1.75rem 0 0; padding: 1.25rem; background: var(--wash); border-left: 2px solid var(--mark); }
+.contact-prompt p { margin: 0 0 0.6rem; font-size: 0.88rem; color: var(--steel); }
+.contact-prompt a { display: inline-block; margin-right: 1.25rem; font-family: var(--mono); font-weight: 500; font-size: 0.95rem; color: var(--mark); }
+
+.body { margin: 2rem 0 0; max-width: 46rem; line-height: 1.7; }
+.gallery { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem; margin: 2.5rem 0 0; }
+figure { margin: 0; }
+figure .shot { background: var(--wash); padding: 1rem; aspect-ratio: 1; display: grid; place-items: center; }
+figure .shot img { max-height: 100%; width: auto; }
+figcaption { font-family: var(--mono); font-weight: 500; color: var(--steel); font-size: 0.75rem; margin-top: 0.6rem; }
+
+.prose { max-width: 42rem; margin: 2rem 0 0; line-height: 1.75; }
+.prose h2 { margin: 2.5rem 0 0.75rem; }
+
+@media (max-width: 62rem) {
+  .catalogue { grid-template-columns: 1fr; gap: 2rem; }
+  .grid { grid-template-columns: repeat(2, 1fr); }
+  .product { grid-template-columns: 1fr; gap: 2rem; }
+  .capability, .cat-list { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 38rem) {
+  .grid { grid-template-columns: 1fr; }
+  .gallery { grid-template-columns: 1fr; }
+  .capability, .cat-list { grid-template-columns: 1fr; }
+  .dimension { grid-template-columns: 1fr; }
+  .dimension div + div { border-left: 0; border-top: 1px solid var(--line); }
+  .site-header .wrap { flex-direction: column; align-items: flex-start; gap: 0.9rem; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+}

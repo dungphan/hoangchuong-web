@@ -39,6 +39,20 @@ else
   pass "build is clean (no warnings, no deprecations)"
 fi
 
+# A running `hugo server` rewrites public/ with unminified markup and a
+# livereload script injected. Every assertion that greps minified output then
+# fails at once, which reads as a catastrophic regression rather than a stray
+# background process. Name it instead.
+# Checked by process, not by inspecting public/: the server overwrites our
+# build asynchronously, so a file check here races and usually reads our own
+# output. pgrep is deterministic.
+if pgrep -f 'hugo server' > /dev/null 2>&1; then
+  echo "A hugo server is running. It rewrites public/ with unminified output and a"
+  echo "livereload script, so every assertion that greps minified markup fails at once."
+  echo "Stop it first:  pkill -f 'hugo server'"
+  exit 1
+fi
+
 echo "==> Assertions"
 # --- assertions ---
 assert_file public/index.html "home page is generated"
@@ -133,9 +147,30 @@ assert_contains public/san-pham/demo-project/index.html '<a href=mailto:sales@ex
 assert_contains public/san-pham/demo-project/index.html '<a href=tel:0900000000>0900 000 000</a></div>' "contact prompt links the settings phone"
 assert_contains public/san-pham/chai-pet-500ml/index.html "Liên hệ" "unpriced product renders Liên hệ"
 assert_not_contains public/san-pham/chai-pet-500ml/index.html "0 ₫" "unpriced product does not render a zero price"
-assert_contains public/san-pham/index.html '</h2><span class="price price-contact">Liên hệ</span>' "grid card shows Liên hệ for unpriced products"
+# Anchored to the price element, not the bare word: "Liên hệ" also appears in
+# the section intro copy, so a plain substring passed even with the price
+# partial deleted from the card.
+assert_contains public/san-pham/index.html '<span class="price price-contact">Liên hệ</span>' "grid card shows Liên hệ for unpriced products"
+assert_contains public/san-pham/index.html '<span class=code>HD-1000</span>' "card leads with the product code"
+assert_contains public/san-pham/index.html '<span class=spec>500ml · PET · 24/410</span>' "card spec line joins capacity, material and neck"
+
+# --- design system ---
+# Fonts are self-hosted so the site makes no third-party request, and the
+# Vietnamese subset is not optional: without it every ộ ữ ế ị falls back.
+assert_file public/fonts/be-vietnam-pro-400-vietnamese.woff2 "Vietnamese font subset is published"
+assert_file public/fonts/be-vietnam-pro-800-latin.woff2 "display weight is published"
+assert_file public/fonts/ibm-plex-mono-500-vietnamese.woff2 "mono Vietnamese subset is published"
+assert_contains public/index.html '<p class=eyebrow>Nhà sản xuất bao bì nhựa</p>' "home hero carries its eyebrow"
+assert_contains public/index.html '<span class="v data">1000ml</span>' "hero dimension callout states a real capacity"
+assert_contains public/index.html '<span class="v data">24/410 · 28/410</span>' "capability strip states the standard neck sizes"
+assert_contains public/index.html '<ul class=cat-list>' "home lists the product categories"
 
 assets_css=$(ls public/css/main.min.*.css 2>/dev/null | head -1)
+assert_contains "$assets_css" "Be Vietnam Pro" "CSS declares the Vietnamese display face"
+assert_contains "$assets_css" "IBM Plex Mono" "CSS declares the mono face used for spec data"
+assert_contains "$assets_css" "U+1EA0-1EF9" "font declares the Vietnamese unicode range"
+assert_contains "$assets_css" "/fonts/be-vietnam-pro-400-vietnamese.woff2" "CSS points at the self-hosted font, not a third-party host"
+assert_not_contains "$assets_css" "fonts.gstatic.com" "no third-party font request"
 assert_matches "$assets_css" 'grid-template-columns: *repeat\(3, *1fr\)' "grid is three columns"
 assert_file public/san-pham/page/2/index.html "pagination generates a second page"
 assert_contains public/san-pham/index.html "catalogue-main" "grid page uses the catalogue layout"
