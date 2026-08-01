@@ -1,10 +1,11 @@
 {{ define "main" }}
 <h1>{{ .Title }}</h1>
 {{ with .Params.intro }}<p>{{ . }}</p>{{ end }}
+{{ partial "search-box.html" . }}
 <div class="catalogue">
   {{ partial "category-sidebar.html" . }}
   <div class="catalogue-main">
-    <div class="grid">
+    <div class="grid" id="product-grid">
       {{- $paginator := .Paginate .Pages }}
       {{- range $paginator.Pages }}
         {{ partial "product-card.html" . }}
@@ -13,4 +14,8 @@
     {{ template "_internal/pagination.html" . }}
   </div>
 </div>
+{{- with resources.Get "js/search.js" }}
+  {{- $js := . | minify | fingerprint -}}
+  <script type="module" src="{{ $js.RelPermalink }}" integrity="{{ $js.Data.Integrity }}"></script>
+{{- end }}
 {{ end }}

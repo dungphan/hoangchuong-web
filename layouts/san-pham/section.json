@@ -1,0 +1,27 @@
+{{- /*
+  Search index for the catalogue. One entry per product, covering every page
+  of the paginated grid — searching must reach products the visitor cannot
+  currently see.
+
+  `h` carries the card's rendered HTML from the same product-card.html partial
+  the grid uses. Rendering results from this markup rather than rebuilding a
+  card in JavaScript is what keeps a search result identical to a grid card:
+  image pipeline, price-or-Liên hệ, and summary all stay in one place.
+
+  `s` is the raw haystack — title, mã, dung tích, chất liệu, cổ chai. It is
+  NOT folded here: the query is folded in the browser, and both sides must go
+  through the same function or accents match inconsistently.
+*/ -}}
+{{- $items := slice -}}
+{{- range .Pages -}}
+  {{- $s := slice .Title -}}
+  {{- with .Params.code }}{{ $s = $s | append . }}{{ end -}}
+  {{- with .Params.capacity }}{{ $s = $s | append . }}{{ end -}}
+  {{- with .Params.material }}{{ $s = $s | append . }}{{ end -}}
+  {{- with .Params.neck }}{{ $s = $s | append . }}{{ end -}}
+  {{- $items = $items | append (dict
+      "s" (delimit $s " ")
+      "h" (partial "product-card.html" . | string)
+  ) -}}
+{{- end -}}
+{{- jsonify (dict "items" $items) -}}
