@@ -87,13 +87,22 @@
   --display: 'Be Vietnam Pro', system-ui, sans-serif;
   --mono: 'IBM Plex Mono', ui-monospace, monospace;
 }
+/* Dark palette lives in one place and is applied two ways: by system
+   preference unless the visitor has explicitly chosen light, and by explicit
+   choice regardless of system. The :not() is what lets "light" win over a
+   dark OS setting — without it the toggle only works one way. */
 @media (prefers-color-scheme: dark) {
-  :root {
+  :root:not([data-theme="light"]) {
     --ink: #eef2f4; --paper: #0b1014; --wash: #131b21;
     --line: #23303a; --steel: #93a5b1; --mark: #4fc4d4; --mark-2: #10262b;
   }
 }
+:root[data-theme="dark"] {
+  --ink: #eef2f4; --paper: #0b1014; --wash: #131b21;
+  --line: #23303a; --steel: #93a5b1; --mark: #4fc4d4; --mark-2: #10262b;
+}
 * { box-sizing: border-box; }
+[hidden] { display: none !important; }
 html { -webkit-text-size-adjust: 100%; }
 body {
   margin: 0;
@@ -139,6 +148,24 @@ a { color: inherit; }
   padding-bottom: 2px; border-bottom: 2px solid transparent;
 }
 .site-header nav a:hover { color: var(--ink); border-bottom-color: var(--mark); }
+.site-header .right { display: flex; align-items: center; gap: 1.6rem; }
+.theme-toggle {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 2.1rem; height: 2.1rem; padding: 0; cursor: pointer;
+  background: none; border: 1px solid var(--line); border-radius: 0;
+  color: var(--steel); line-height: 0;
+}
+.theme-toggle:hover { color: var(--mark); border-color: var(--mark); }
+.theme-toggle svg { width: 1rem; height: 1rem; }
+/* One button, two glyphs: show the state you would switch TO. */
+.theme-toggle .to-dark { display: block; }
+.theme-toggle .to-light { display: none; }
+:root[data-theme="dark"] .theme-toggle .to-dark { display: none; }
+:root[data-theme="dark"] .theme-toggle .to-light { display: block; }
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .theme-toggle .to-dark { display: none; }
+  :root:not([data-theme="light"]) .theme-toggle .to-light { display: block; }
+}
 
 .site-footer { border-top: 1px solid var(--line); margin-top: 5rem; background: var(--wash); }
 .site-footer .wrap {
@@ -213,7 +240,7 @@ main > h1 + p { color: var(--steel); font-size: 1.05rem; max-width: 46rem; margi
 
 /* ---------- catalogue ---------- */
 .catalogue { display: grid; grid-template-columns: 15rem 1fr; gap: 3rem; align-items: start; padding: 2rem 0 0; }
-.grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--line); border: 1px solid var(--line); }
+.grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.25rem; }
 
 .sidebar h2 { font-size: 0.72rem; font-family: var(--mono); font-weight: 500; letter-spacing: 0.14em; text-transform: uppercase; color: var(--steel); margin: 0 0 1rem; }
 .sidebar ul { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--line); }
@@ -227,7 +254,7 @@ main > h1 + p { color: var(--steel); font-size: 1.05rem; max-width: 46rem; margi
 
 /* Card: image well, then the spec line, then the name. The code leads because
    that is what a buyer matches against. */
-.card { background: var(--paper); display: flex; flex-direction: column; }
+.card { background: var(--paper); border: 1px solid var(--line); display: flex; flex-direction: column; }
 .card > a { text-decoration: none; display: flex; flex-direction: column; flex: 1; }
 .card .meta-line { display: flex; flex-direction: column; flex: 1; }
 .card .shot { background: var(--wash); padding: 1rem; }

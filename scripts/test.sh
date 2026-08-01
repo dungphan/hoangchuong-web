@@ -19,6 +19,20 @@ assert_not_contains() {
   if [ -f "$1" ] && grep -qF -- "$2" "$1"; then fail "$3 (unexpected '$2' in $1)"; else pass "$3"; fi
 }
 
+# A running `hugo server` rewrites public/ with unminified markup and a
+# livereload script injected. Every assertion that greps minified output then
+# fails at once, which reads as a catastrophic regression rather than a stray
+# background process. Name it instead.
+# Checked by process, not by inspecting public/: the server overwrites our
+# build asynchronously, so a file check here races and usually reads our own
+# output. pgrep is deterministic.
+if pgrep -f 'hugo server' > /dev/null 2>&1; then
+  echo "A hugo server is running. It rewrites public/ with unminified output and a"
+  echo "livereload script, so every assertion that greps minified markup fails at once."
+  echo "Stop it first:  pkill -f 'hugo server'"
+  exit 1
+fi
+
 echo "==> Building"
 BUILD_LOG=$(mktemp)
 # --cleanDestinationDir is load-bearing: Hugo does not purge public/ between
@@ -37,20 +51,6 @@ if grep -qiE 'WARN|deprecat' "$BUILD_LOG"; then
   FAIL=1
 else
   pass "build is clean (no warnings, no deprecations)"
-fi
-
-# A running `hugo server` rewrites public/ with unminified markup and a
-# livereload script injected. Every assertion that greps minified output then
-# fails at once, which reads as a catastrophic regression rather than a stray
-# background process. Name it instead.
-# Checked by process, not by inspecting public/: the server overwrites our
-# build asynchronously, so a file check here races and usually reads our own
-# output. pgrep is deterministic.
-if pgrep -f 'hugo server' > /dev/null 2>&1; then
-  echo "A hugo server is running. It rewrites public/ with unminified output and a"
-  echo "livereload script, so every assertion that greps minified markup fails at once."
-  echo "Stop it first:  pkill -f 'hugo server'"
-  exit 1
 fi
 
 echo "==> Assertions"
@@ -100,6 +100,16 @@ assert_file content/gioi-thieu/portrait.jpg "regression fixture: portrait.jpg is
 assert_file public/admin/index.html "admin page is published"
 assert_file public/admin/config.yml "admin config is published"
 assert_contains public/admin/index.html "decap-cms@3.15.1" "Decap is pinned to an exact version"
+# The admin page is Hugo-rendered rather than static for one reason: the
+# preview pane needs the real stylesheet and its name is fingerprinted. Serve
+# it from static/ again and the preview silently goes back to unstyled.
+assert_matches public/admin/index.html 'registerPreviewStyle\("/css/main\.min\.[a-f0-9]+\.css"\)' "preview pane loads the fingerprinted site stylesheet"
+assert_contains public/admin/index.html 'registerPreviewTemplate("san-pham"' "products have a custom preview, not Decap's field dump"
+assert_contains public/admin/index.html '"chai-hdpe":"Chai nhựa HDPE"' "preview knows the category labels"
+# The map existing is not the same as the map being used: with the lookup
+# deleted the preview still shipped the table and printed the raw slug.
+assert_matches public/admin/index.html 'DANH_MUC\[[a-zA-Z_$]+\("danh-muc"\)\]' "preview actually looks the label up, rather than printing the slug"
+assert_contains public/admin/index.html "<title>Quản trị nội dung" "admin page title is Vietnamese"
 assert_not_contains public/admin/index.html "decap-cms@^3" "Decap is not loaded from a floating range"
 # CMS field-name contract: Hugo never validates front matter against this file,
 # so a renamed field silently renders blank in production. Each product field
@@ -165,7 +175,29 @@ assert_contains public/index.html '<span class="v data">1000ml</span>' "hero dim
 assert_contains public/index.html '<span class="v data">24/410 · 28/410</span>' "capability strip states the standard neck sizes"
 assert_contains public/index.html '<ul class=cat-list>' "home lists the product categories"
 
+# --- theme toggle ---
+# The initial theme must be applied by a synchronous inline script in <head>.
+# Move it to a deferred script and every navigation flashes the system theme
+# before switching, for anyone who chose the non-system option.
+assert_contains public/index.html '<script>try{var t=localStorage.getItem("theme")' "theme is applied inline in head, before first paint"
+assert_contains public/index.html 'class=theme-toggle id=theme-toggle hidden' "toggle renders hidden, so it never appears without the script that drives it"
+assert_contains public/index.html 'aria-label="Đổi giao diện sáng/tối"' "toggle has a Vietnamese accessible name"
+assert_matches public/index.html '<script type=module src=/js/theme\.min\.[a-f0-9]+\.js' "theme script is fingerprinted and loaded as a module"
+assert_contains public/san-pham/index.html 'id=theme-toggle' "toggle is site-wide, not only on the home page"
+
 assets_css=$(ls public/css/main.min.*.css 2>/dev/null | head -1)
+# search.js sets pager.hidden = true. .pagination sets display:flex, which beat
+# the UA's [hidden]{display:none}, so a search matching one product still
+# showed the full pager underneath it and read as "search did nothing".
+assert_contains "$assets_css" '[hidden]{display:none!important}' "the hidden attribute beats our own display rules"
+# Anchored to the variable block: ':root[data-theme=dark]' alone also matches
+# the toggle's own icon rules, so it passed with the palette override deleted.
+assert_contains "$assets_css" ':root[data-theme=dark]{--ink:' "an explicit dark choice applies the palette regardless of the system"
+assert_contains "$assets_css" ':root:not([data-theme=light])' "an explicit light choice wins over a dark system preference"
+# The flush grid drew its gridlines as a background behind a 1px gap, so any
+# row short of three showed dead cells — which is most search results.
+assert_contains "$assets_css" '.card{background:var(--paper);border:1px solid var(--line)' "cards carry their own border, so a short row leaves no dead cells"
+assert_not_contains "$assets_css" '.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px' "grid no longer paints gridlines behind empty cells"
 assert_contains "$assets_css" "Be Vietnam Pro" "CSS declares the Vietnamese display face"
 assert_contains "$assets_css" "IBM Plex Mono" "CSS declares the mono face used for spec data"
 assert_contains "$assets_css" "U+1EA0-1EF9" "font declares the Vietnamese unicode range"
@@ -210,6 +242,19 @@ elif node scripts/search-test.mjs > "$SEARCH_LOG" 2>&1; then
 else
   fail "search matcher unit tests"
   cat "$SEARCH_LOG"
+fi
+
+# Same reasoning for the toggle: whether a click flips away from the theme
+# actually on screen depends on the system preference, which built HTML cannot
+# show.
+THEME_LOG=$(mktemp)
+if ! command -v node > /dev/null 2>&1; then
+  fail "theme toggle unit tests (node not found — the toggle cannot be verified)"
+elif node scripts/theme-test.mjs > "$THEME_LOG" 2>&1; then
+  pass "theme toggle unit tests ($(grep -c PASS "$THEME_LOG") assertions)"
+else
+  fail "theme toggle unit tests"
+  cat "$THEME_LOG"
 fi
 
 assert_file public/404.html "404 page is generated"
