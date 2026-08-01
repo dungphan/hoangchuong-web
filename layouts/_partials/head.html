@@ -1,6 +1,13 @@
 {{- $s := hugo.Data.settings -}}
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+{{- /*
+  Applied before first paint, deliberately inline and synchronous. Reading the
+  stored theme from a deferred script would let the page paint the system
+  theme first, so anyone who chose the non-system option sees a flash of the
+  wrong colours on every single navigation.
+*/ -}}
+<script>try{var t=localStorage.getItem('theme');if(t==='dark'||t==='light'){document.documentElement.dataset.theme=t}}catch(e){}</script>
 <title>{{ if .IsHome }}{{ $s.site_title }}{{ else }}{{ .Title }} — {{ $s.site_title }}{{ end }}</title>
 <meta name="description" content="{{ with .Description }}{{ . }}{{ else }}{{ $s.description }}{{ end }}">
 <link rel="canonical" href="{{ .Permalink }}">

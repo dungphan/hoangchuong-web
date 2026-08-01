@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Quản trị nội dung — {{ hugo.Data.settings.site_title }}</title>
+</head>
+<body>
+<script src="https://unpkg.com/decap-cms@3.15.1/dist/decap-cms.js"></script>
+{{- /*
+  This page is rendered by Hugo rather than served from static/ for one
+  reason: the preview pane needs the real stylesheet, and its filename is
+  fingerprinted. A static admin page cannot know that hash, so the preview
+  could only ever be unstyled.
+*/ -}}
+{{- $css := resources.Get "css/main.css" | minify | fingerprint }}
+<script>
+CMS.registerPreviewStyle('{{ $css.RelPermalink }}');
+
+// Category values are stored as slugs so URLs survive a relabel. The default
+// preview printed the raw slug; editors need to see the label they picked.
+var DANH_MUC = { {{ range hugo.Data.danhmuc }}'{{ .slug }}': '{{ .label }}', {{ end }} };
+
+// Matches lang.FormatCurrency 0 "VND" on the live page: 125000 -> "125.000 ₫".
+function giaVND(n) {
+  var v = Number(n);
+  if (!v) { return null; }
+  return new Intl.NumberFormat('vi-VN').format(v) + ' ₫';
+}
+
+var SanPham = createClass({
+  render: function () {
+    var self = this;
+    var get = function (k) { var v = self.props.entry.getIn(['data', k]); return v == null ? '' : v; };
+    var asset = function (p) { var a = p ? self.props.getAsset(p) : null; return a ? a.toString() : null; };
+
+    var gia = giaVND(get('price'));
+    var cover = asset(get('cover'));
+
+    var rows = [
+      ['Mã sản phẩm', get('code')],
+      ['Dung tích', get('capacity')],
+      ['Chất liệu', get('material')],
+      ['Cổ chai', get('neck')]
+    ].filter(function (r) { return r[1]; });
+
+    var gallery = [];
+    var g = self.props.entry.getIn(['data', 'gallery']);
+    if (g && g.forEach) {
+      g.forEach(function (item, i) {
+        var src = asset(item.get('image'));
+        if (src) { gallery.push({ src: src, caption: item.get('caption') || '', key: i }); }
+      });
+    }
+
+    var spec = [get('capacity'), get('material'), get('neck')].filter(Boolean).join(' · ');
+
+    // The grid card is shown alongside the detail page: it is the first thing
+    // a buyer sees and an editor has no other way to check it.
+    var card = h('div', { style: { borderBottom: '1px solid var(--line)', paddingBottom: '2rem' } },
+      h('p', { className: 'eyebrow' }, 'Thẻ trong danh sách sản phẩm'),
+      h('div', { style: { maxWidth: '20rem' } },
+        h('article', { className: 'card' },
+          cover ? h('div', { className: 'shot' }, h('img', { src: cover, alt: get('title') })) : null,
+          h('div', { className: 'meta-line' },
+            get('code') ? h('span', { className: 'code' }, get('code')) : null,
+            h('h2', null, get('title') || 'Chưa đặt tên'),
+            spec ? h('span', { className: 'spec' }, spec) : null,
+            h('span', { className: gia ? 'price' : 'price price-contact' }, gia || 'Liên hệ')
+          ),
+          get('summary') ? h('p', null, get('summary')) : null
+        )
+      )
+    );
+
+    return h('main', { className: 'wrap' },
+      card,
+      h('article', { className: 'product' },
+        h('div', { className: 'product-media' },
+          cover ? h('div', { className: 'shot' }, h('img', { src: cover, alt: get('title') })) : null,
+          gallery.length ? h('div', { className: 'gallery' }, gallery.map(function (s) {
+            return h('figure', { key: s.key },
+              h('div', { className: 'shot' }, h('img', { src: s.src, alt: s.caption || get('title') })),
+              s.caption ? h('figcaption', null, s.caption) : null
+            );
+          })) : null
+        ),
+        h('div', { className: 'product-info' },
+          get('code') ? h('span', { className: 'code' }, get('code')) : null,
+          h('h1', null, get('title') || 'Chưa đặt tên'),
+          h('span', { className: gia ? 'price' : 'price price-contact' }, gia || 'Liên hệ'),
+          rows.length ? h('dl', { className: 'specs' }, rows.map(function (r, i) {
+            return h('div', { key: i }, h('dt', null, r[0]), h('dd', null, String(r[1])));
+          })) : null,
+          get('danh-muc') ? h('p', { className: 'eyebrow', style: { marginTop: '1.5rem' } },
+            DANH_MUC[get('danh-muc')] || get('danh-muc')) : null,
+          get('summary') ? h('div', { className: 'body' }, h('p', null, get('summary'))) : null,
+          h('div', { className: 'widget' }, self.props.widgetFor('body'))
+        )
+      )
+    );
+  }
+});
+CMS.registerPreviewTemplate('san-pham', SanPham);
+
+</script>
+</body>
+</html>
