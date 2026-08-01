@@ -1,13 +1,29 @@
 {{- $p := . -}}
+{{- /*
+  The code leads and the spec line sits under the name, because a packaging
+  buyer matches on "HD-601 / 250ml / 24/410" before they read a product name.
+  Only fields that exist are joined, so a sparse product shows a short line
+  rather than stranded separators.
+*/ -}}
+{{- $spec := slice -}}
+{{- with $p.Params.capacity }}{{ $spec = $spec | append . }}{{ end -}}
+{{- with $p.Params.material }}{{ $spec = $spec | append . }}{{ end -}}
+{{- with $p.Params.neck }}{{ $spec = $spec | append . }}{{ end -}}
 <article class="card">
   <a href="{{ $p.RelPermalink }}">
     {{- with $p.Params.cover }}
       {{- with $p.Resources.GetMatch . }}
-        {{ partial "image.html" (dict "img" . "alt" $p.Title "sizes" "(max-width: 40rem) 100vw, 17rem") }}
+    <div class="shot">
+      {{ partial "image.html" (dict "img" . "alt" $p.Title "sizes" "(max-width: 38rem) 100vw, (max-width: 62rem) 50vw, 22rem") }}
+    </div>
       {{- end }}
     {{- end }}
-    <h2>{{ $p.Title }}</h2>
-    {{ partial "price.html" $p }}
+    <div class="meta-line">
+      {{- with $p.Params.code }}<span class="code">{{ . }}</span>{{ end }}
+      <h2>{{ $p.Title }}</h2>
+      {{- with $spec }}<span class="spec">{{ delimit . " · " }}</span>{{ end }}
+      {{ partial "price.html" $p }}
+    </div>
   </a>
   {{- with $p.Params.summary }}<p>{{ . }}</p>{{ end }}
 </article>

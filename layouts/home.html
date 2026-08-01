@@ -1,10 +1,63 @@
 {{ define "main" }}
-<h1>{{ with .Params.hero_heading }}{{ . }}{{ else }}{{ hugo.Data.settings.site_title }}{{ end }}</h1>
-{{ with .Params.hero_subheading }}<p>{{ . }}</p>{{ end }}
-{{ with .Params.hero_image }}
-  {{ with $.Resources.GetMatch . }}
-    {{ partial "image.html" (dict "img" . "alt" $.Params.hero_heading "loading" "eager" "sizes" "(max-width: 68rem) 100vw, 68rem") }}
+<section class="hero">
+  <p class="eyebrow">Nhà sản xuất bao bì nhựa</p>
+  <h1>{{ with .Params.hero_heading }}{{ . }}{{ else }}{{ hugo.Data.settings.site_title }}{{ end }}</h1>
+  {{ with .Params.hero_subheading }}<p class="lede">{{ . }}</p>{{ end }}
+
+  {{ with .Params.hero_image }}
+    {{ with $.Resources.GetMatch . }}
+    <div class="hero-figure">
+      {{ partial "image.html" (dict "img" . "alt" $.Params.hero_heading "loading" "eager" "sizes" "(max-width: 74rem) 100vw, 74rem") }}
+      {{- /*
+        The signature. A mould drawing annotates a part with a dimension line and
+        a measured value; these callouts sit under the three containers in the
+        image and state their real capacities, so the device carries information
+        rather than decorating the photo.
+      */ -}}
+      {{- with $.Params.hero_specs }}
+      <div class="dimension">
+        {{- range . }}
+        <div>
+          <span class="v data">{{ .value }}</span>
+          <span class="k">{{ .label }}</span>
+        </div>
+        {{- end }}
+      </div>
+      {{- end }}
+    </div>
+    {{ end }}
   {{ end }}
-{{ end }}
-{{ .Content }}
+
+  {{- with .Params.capabilities }}
+  <div class="capability">
+    {{- range . }}
+    <div>
+      <span class="v data">{{ .value }}</span>
+      <span class="k">{{ .label }}</span>
+    </div>
+    {{- end }}
+  </div>
+  {{- end }}
+</section>
+
+{{- $terms := index site.Taxonomies "danh-muc" }}
+<section class="home-cats">
+  <h2>Danh mục sản phẩm</h2>
+  <ul class="cat-list">
+    {{- range hugo.Data.danhmuc }}
+      {{- $slug := .slug }}
+      {{- $label := .label }}
+      {{- with index $terms $slug }}
+      <li>
+        <a href="{{ (printf "/danh-muc/%s/" $slug) | relURL }}">
+          <span class="n">{{ len .Pages }} sản phẩm</span>
+          <span class="l">{{ $label }}</span>
+        </a>
+      </li>
+      {{- end }}
+    {{- end }}
+  </ul>
+</section>
+
+{{ with .Content }}<div class="prose">{{ . }}</div>{{ end }}
 {{ end }}

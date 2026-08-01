@@ -6,6 +6,6 @@
       {{ partial "image.html" (dict "img" . "alt" $.Title "sizes" "(max-width: 30rem) 100vw, 30rem") }}
     {{- end }}
   {{- end }}
-  <div class="body">{{ .Content }}</div>
+  <div class="prose">{{ .Content }}</div>
 </article>
 {{ end }}
