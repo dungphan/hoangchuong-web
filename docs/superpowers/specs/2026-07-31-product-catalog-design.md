@@ -194,6 +194,47 @@ original build caught seven real defects. They are moved deliberately, one at a
 time — a bulk find-and-replace that leaves an assertion pointing at a path Hugo
 no longer produces yields a green-but-meaningless suite.
 
+## Catalogue search
+
+Added 2026-08-01, replacing the original "site search — out of scope" ruling.
+That ruling assumed browsing. It does not survive product codes: nobody
+browses a catalogue to find `HD-601` when they already know the code.
+
+**Placement.** One input above the grid on `/san-pham/`, filtering the grid in
+place. No results page, no URL state.
+
+**Matched fields.** Title, mã, dung tích, chất liệu, cổ chai. Not the summary
+or body — with no relevance ranking, full-text matching returns a wall of
+loosely-related products in arbitrary order.
+
+**Index.** Hugo emits `/san-pham/index.json` from `.Pages` — every product,
+not the paginator's twelve. `HD-601` is on grid page 2, so an index built from
+the visible DOM would miss the exact case that motivated the feature.
+
+Each entry carries its card's **rendered HTML** from `product-card.html`. A
+search result is therefore the same markup as a grid card by construction:
+image pipeline, price-or-Liên hệ, and summary stay in one place rather than
+being reimplemented in JavaScript and drifting.
+
+**Matching rules.**
+
+| Rule | Reason |
+|---|---|
+| Accent-insensitive (`chai nhua` → **Chai nhựa**) | Vietnamese users routinely type unaccented |
+| `đ`/`Đ` mapped explicitly | NFD does not decompose it; without this every `đ` product stops matching its unaccented spelling |
+| Word-prefix, not substring | `hu` sits inside `nhua`, so substring matching returned every Chai nhựa when searching Hũ nhựa |
+| Punctuation-stripped match for digit-bearing tokens only | `hd601` and `24410` find `HD-601` and `24/410`; restricting it to digits stops `pe` matching every `HDPE` |
+| All tokens must match | `chai 500ml` narrows rather than widening |
+
+**Degradation.** The box is rendered `hidden` and revealed by the script. The
+grid and its pagination stay fully server-rendered, so without JavaScript the
+catalogue works exactly as before rather than presenting a dead input.
+
+**Testing.** The matcher is pure and unit-tested in `scripts/search-test.mjs`
+under Node. This is not optional: accent folding and code punctuation are
+runtime behaviour, and a search box that renders perfectly while matching
+nothing would satisfy every grep assertion in `scripts/test.sh`.
+
 ## Risks and mitigations
 
 **Hugo does not validate front matter.** Six new keys (`code`, `category`,
@@ -227,7 +268,6 @@ the image.
 ## Out of scope
 
 - Cart, checkout, order processing, stock levels
-- Site search
 - A contact *form* — there is no server to receive submissions. The contact
   prompt is the email and phone in `data/settings.yaml`.
 - Multi-language (Vietnamese only)

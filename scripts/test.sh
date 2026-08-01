@@ -140,6 +140,43 @@ assert_matches "$assets_css" 'grid-template-columns: *repeat\(3, *1fr\)' "grid i
 assert_file public/san-pham/page/2/index.html "pagination generates a second page"
 assert_contains public/san-pham/index.html "catalogue-main" "grid page uses the catalogue layout"
 
+# --- catalogue search ---
+assert_file public/san-pham/index.json "search index is generated"
+if python3 -c "import json; json.load(open('public/san-pham/index.json'))" 2>/dev/null; then
+  pass "search index is valid JSON"
+else
+  fail "search index is valid JSON"
+fi
+assert_contains public/san-pham/index.json "HD-601" "search index carries the product code"
+assert_contains public/san-pham/index.json "24/410" "search index carries the neck size"
+assert_contains public/san-pham/index.json "250ml" "search index carries the capacity"
+assert_contains public/san-pham/index.json "HDPE" "search index carries the material"
+# The index is built from .Pages, not the paginator. Switching it to
+# $paginator.Pages would silently make every product past the first page
+# unsearchable — including HD-601, which lives on page 2.
+assert_contains public/san-pham/index.json "Chai nhựa HDPE mẫu 01" "search index reaches products beyond grid page 1"
+assert_not_contains public/san-pham/index.html "Chai nhựa HDPE mẫu 01" "that product is genuinely absent from page 1, so the assertion above is load-bearing"
+# Results are injected as rendered cards, so a result cannot drift from a grid card.
+assert_contains public/san-pham/index.json "price price-contact" "indexed cards carry the rendered price markup"
+assert_contains public/san-pham/index.json "srcset=" "indexed cards carry the processed image"
+assert_contains public/san-pham/index.html "id=product-search class=product-search role=search hidden" "search box renders hidden, so it never appears without the script that drives it"
+assert_contains public/san-pham/index.html "id=product-grid" "grid is addressable by the search script"
+assert_contains public/san-pham/index.html "Tìm theo tên hoặc mã sản phẩm" "search box has a Vietnamese placeholder"
+assert_matches public/san-pham/index.html '<script type=module src=/js/search\.min\.[a-f0-9]+\.js' "search script is fingerprinted and loaded as a module"
+assert_not_contains public/index.html "product-search" "search box is scoped to the catalogue, not injected site-wide"
+# Accent folding, đ handling and code punctuation are runtime behaviour that no
+# amount of grepping the built HTML can observe: a search box that renders
+# perfectly and matches nothing would satisfy every assertion above.
+SEARCH_LOG=$(mktemp)
+if ! command -v node > /dev/null 2>&1; then
+  fail "search matcher unit tests (node not found — the matcher cannot be verified)"
+elif node scripts/search-test.mjs > "$SEARCH_LOG" 2>&1; then
+  pass "search matcher unit tests ($(grep -c PASS "$SEARCH_LOG") assertions)"
+else
+  fail "search matcher unit tests"
+  cat "$SEARCH_LOG"
+fi
+
 assert_file public/404.html "404 page is generated"
 assert_contains public/404.html "Không tìm thấy" "404 page is in Vietnamese"
 assert_contains public/index.html "Sản phẩm" "nav is in Vietnamese"

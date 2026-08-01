@@ -1,0 +1,16 @@
+{{- /*
+  Catalogue search input. Rendered with `hidden` and revealed by search.js:
+  the box does nothing without JavaScript, and a dead input is worse than no
+  input. The grid and its pagination stay fully server-rendered, so a visitor
+  without JS still gets the whole catalogue.
+*/ -}}
+<form id="product-search" class="product-search" role="search" hidden>
+  <label class="visually-hidden" for="product-search-input">Tìm sản phẩm</label>
+  <input
+    id="product-search-input"
+    type="search"
+    name="q"
+    autocomplete="off"
+    placeholder="Tìm theo tên hoặc mã sản phẩm (VD: HD-601)">
+</form>
+<p id="product-search-status" class="search-status" aria-live="polite"></p>
