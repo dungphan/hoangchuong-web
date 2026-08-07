@@ -3,7 +3,7 @@ title: Chai nhựa HDPE mẫu 01
 date: 2026-07-11
 draft: false
 danh-muc: chai-hdpe
-code: HD-60111111
+code: HD-601
 summary: Sản phẩm mẫu để kiểm tra phân trang.
 cover: cover.jpg
 capacity: 250ml
