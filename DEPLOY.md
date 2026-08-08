@@ -289,33 +289,82 @@ this mismatch is the most common cause — check the browser console on
 ## Changing the pages.dev hostname later
 
 A `*.pages.dev` hostname is derived from the Pages project's name, and
-**Cloudflare Pages projects cannot be renamed**. Moving from
-`https://old-name.pages.dev` to `https://new-name.pages.dev` therefore means
-creating a second project and retiring the first:
+**renaming the project does move the hostname** — but not immediately, which
+makes the operation look broken while it is working. This was done once, on
+2026-08-08, going from `hoangchuong-web` to `labcos-web`; the sequence below
+is what actually happened, not a guess.
 
-1. Create a new Pages project named `new-name`, connected to the same GitHub
-   repository, with the identical build settings from Step 2. Wait for its
-   first deploy and check `curl -sSI https://new-name.pages.dev/ | head -1`
-   returns `HTTP/2 200`.
+1. Rename the project: **Settings → General → project name**. Immediately
+   after the rename, and until a new production build finishes:
+   - the **Domains:** line still shows the *old* hostname,
+   - the project list still shows the old hostname as the project's subtitle,
+   - the new hostname does not resolve in DNS at all.
+
+   None of that means the rename failed. Trigger a production deployment
+   (**Deployments → Retry deployment**, or push to `main`) and re-check.
+   Expect an interval where the new hostname resolves but returns **HTTP 522**
+   — that is Cloudflare routing the name before any deployment is attached to
+   it, and it clears once the build goes green. Brief intermittent 522s on the
+   new hostname for a few minutes after the first successful build are also
+   normal edge propagation, not a misconfiguration.
+
+   Verify with DNS rather than the dashboard labels, which lag:
+
+   ```bash
+   dig +short @1.1.1.1 new-name.pages.dev
+   curl -sS -o /dev/null -w '%{http_code}\n' https://new-name.pages.dev/
+   ```
+
 2. Update the two files that name the origin:
    - `hugo.toml` — `baseURL = "https://new-name.pages.dev/"` (trailing slash)
    - `worker/wrangler.toml` — `SITE_ORIGIN = "https://new-name.pages.dev"`
      (**no** trailing slash)
-3. Redeploy the Worker — `cd worker && npx wrangler deploy`. Until this runs,
+3. Commit and push, so Pages rebuilds with the corrected `baseURL`. Confirm the
+   built HTML actually changed — `baseURL` only takes effect on the next build,
+   so this is the check that catches a stale deploy:
+
+   ```bash
+   curl -sS https://new-name.pages.dev/ | grep -oE 'https://[a-z0-9.-]+\.pages\.dev' | sort -u
+   ```
+
+   This must print only the new hostname. Any remaining old-hostname hit means
+   canonical and OpenGraph tags are still pointing search engines and social
+   scrapers at the previous domain.
+4. Redeploy the Worker — `cd worker && npx wrangler deploy`. Until this runs,
    `SITE_ORIGIN` in Cloudflare still holds the old value and CMS login on the
    new hostname fails at `/callback`, per the warning above. Editing
    `wrangler.toml` alone changes nothing in production.
-4. Commit and push, so Pages rebuilds with the corrected `baseURL`.
 5. Update the GitHub OAuth App's **Homepage URL** to the new origin. Its
    **Authorization callback URL** does *not* change — that points at the
    Worker, not at the site.
-6. Verify login end to end at `https://new-name.pages.dev/admin/`, then delete
-   the old Pages project.
+6. Verify login end to end at `https://new-name.pages.dev/admin/`.
 
-Do steps 1 and 2 in that order. Pushing a `baseURL` for a hostname that does
-not exist yet makes the still-live old site emit canonical and OpenGraph URLs
-pointing at nothing.
+Steps 3 and 4 are the two that are easy to forget, because the site keeps
+serving correctly without them — only canonical URLs and CMS login break.
 
 No other file in the repository hardcodes the site origin — `worker/test/`
 uses a fixture value (`https://example.pages.dev`) that is deliberately
 independent of the real one and must not be updated.
+
+Do **not** create a second Pages project pointed at the same repository as a
+way of keeping the old hostname alive. Both projects then auto-build on every
+push and every CMS edit, doubling build minutes and making it ambiguous which
+one served a given page.
+
+### If `npx wrangler` fails with `Cannot find module .../wrangler-dist/cli.js`
+
+The path in that error is `node_modules/wrangler-dist/cli.js` — note it does
+*not* contain `/wrangler/`. `node_modules/.bin/wrangler` is meant to be a
+symlink into the package; when an install produces a plain **copy** instead,
+the shim's relative `../wrangler-dist/cli.js` resolves one directory too high
+and misses. The package itself is intact. Either invoke the real entrypoint:
+
+```bash
+cd worker && node node_modules/wrangler/bin/wrangler.js deploy
+```
+
+or rebuild the tree so the symlink is created properly:
+
+```bash
+cd worker && rm -rf node_modules && npm ci
+```
