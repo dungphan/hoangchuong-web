@@ -315,10 +315,15 @@ is what actually happened, not a guess.
    curl -sS -o /dev/null -w '%{http_code}\n' https://new-name.pages.dev/
    ```
 
-2. Update the two files that name the origin:
+2. Update the three files that name the origin:
    - `hugo.toml` — `baseURL = "https://new-name.pages.dev/"` (trailing slash)
    - `worker/wrangler.toml` — `SITE_ORIGIN = "https://new-name.pages.dev"`
      (**no** trailing slash)
+   - `scripts/test.sh` — the `robots.txt points crawlers at the sitemap`
+     assertion pins the expected `Sitemap:` line, so the suite fails until it
+     is updated. That failure is the point: `robots.txt` is the one output
+     that hands crawlers an absolute URL, so a forgotten rename here quietly
+     redirects search engines to the old domain.
 3. Commit and push, so Pages rebuilds with the corrected `baseURL`. Confirm the
    built HTML actually changed — `baseURL` only takes effect on the next build,
    so this is the check that catches a stale deploy:
@@ -342,9 +347,22 @@ is what actually happened, not a guess.
 Steps 3 and 4 are the two that are easy to forget, because the site keeps
 serving correctly without them — only canonical URLs and CMS login break.
 
-No other file in the repository hardcodes the site origin — `worker/test/`
-uses a fixture value (`https://example.pages.dev`) that is deliberately
-independent of the real one and must not be updated.
+Those three are the only files that hardcode the live site origin. Confirm
+both directions after any rename — the new hostname reaches exactly those
+three files, and the old one is gone:
+
+```bash
+git grep -n "new-name\.pages\.dev" -- . ':!DEPLOY.md' ':!README.md' ':!docs/'
+git grep -n "old-name\.pages\.dev" -- . ':!docs/'      # must print nothing
+```
+
+`docs/` is excluded deliberately: it holds the dated design and plan documents
+from the original build, which are a record of what was decided at the time
+and are not updated when the live domain changes. Note that `worker/test/`
+uses a fixture value
+(`https://example.pages.dev`) that is deliberately independent of the real
+origin and must **not** be updated — changing it would weaken the tests that
+pin exact-origin handling rather than keep them current.
 
 Do **not** create a second Pages project pointed at the same repository as a
 way of keeping the old hostname alive. Both projects then auto-build on every

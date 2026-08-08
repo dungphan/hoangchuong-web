@@ -263,6 +263,16 @@ assert_contains public/index.html "Sản phẩm" "nav is in Vietnamese"
 assert_contains public/index.html "HDPLAS" "home renders the Vietnamese site title"
 assert_contains public/gioi-thieu/index.html '<meta property="og:title" content="Giới thiệu">' "about page is in Vietnamese"
 
+# robots.txt is generated from layouts/robots.txt, not served from static/.
+# The Sitemap line is absolute by necessity — the spec gives crawlers no base
+# to resolve a relative path against — so it silently encodes baseURL, and a
+# stale baseURL points every crawler at the previous domain. Pinning the real
+# host here makes that a test failure rather than a slow SEO leak.
+assert_file public/robots.txt "robots.txt is generated"
+assert_contains public/robots.txt "Sitemap: https://labcos-web.pages.dev/sitemap.xml" "robots.txt points crawlers at the sitemap on the current domain"
+assert_contains public/robots.txt "Disallow: /admin/" "robots.txt keeps the CMS login page out of the index"
+assert_file public/sitemap.xml "the sitemap that robots.txt advertises actually exists"
+
 echo
 if [ "$FAIL" -eq 0 ]; then
   printf '\033[32mALL PASS\033[0m\n'
