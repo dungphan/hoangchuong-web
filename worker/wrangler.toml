@@ -6,4 +6,4 @@ compatibility_date = "2026-07-01"
 GITHUB_CLIENT_ID = "Ov23liB1trqdtFcACdli"
 # Scheme + host only. A trailing slash, a path, or an explicit :443 all make
 # isExactOrigin reject this and return a 500 on /callback.
-SITE_ORIGIN = "https://hoangchuong-web.pages.dev"
+SITE_ORIGIN = "https://labcos-web.pages.dev"

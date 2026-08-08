@@ -4,7 +4,7 @@ Portfolio site. Hugo static site, Decap CMS for editing, Cloudflare Pages for ho
 
 ## Editing content
 
-Go to `https://<project>.pages.dev/admin/` and log in with GitHub. Saving commits
+Go to `https://labcos-web.pages.dev/admin/` and log in with GitHub. Saving commits
 to `main`; the site rebuilds automatically in about a minute.
 
 New projects are created as drafts. Untick **Draft** to publish.

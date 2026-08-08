@@ -24,6 +24,7 @@ Git**, select `dungphan/hoangchuong-web`, and set:
 
 | Setting | Value |
 |---|---|
+| Project name | `labcos-web` |
 | Framework preset | Hugo |
 | Build command | `hugo --gc --minify` |
 | Build output directory | `public` |
@@ -48,8 +49,13 @@ explicitly. This is harmless — nothing here is needed at Hugo build time —
 but it means the build is not literally "no npm install step on Cloudflare,"
 so it's worth knowing rather than discovering by surprise.
 
-Wait for the first deploy, then note the assigned `https://<project>.pages.dev`
-URL.
+The project name is what determines the site's hostname — Cloudflare assigns
+`https://<project-name>.pages.dev`, so naming it `labcos-web` is what produces
+`https://labcos-web.pages.dev`. It cannot be changed afterwards; see
+"Changing the pages.dev hostname later" at the end of this document.
+
+Wait for the first deploy, then confirm the assigned URL is
+`https://labcos-web.pages.dev`.
 
 ## 3. Verify the deployed site before touching auth
 
@@ -57,9 +63,9 @@ Run these only after the Pages project exists and has completed its first
 deploy:
 
 ```bash
-curl -sSI https://<project>.pages.dev/ | head -1
-curl -sS https://<project>.pages.dev/projects/ | grep -o "Demo Project" | head -1
-curl -sSI https://<project>.pages.dev/admin/ | head -1
+curl -sSI https://labcos-web.pages.dev/ | head -1
+curl -sS https://labcos-web.pages.dev/projects/ | grep -o "Demo Project" | head -1
+curl -sSI https://labcos-web.pages.dev/admin/ | head -1
 ```
 
 Expected: `HTTP/2 200`, `Demo Project`, `HTTP/2 200`. The admin page will
@@ -70,7 +76,7 @@ render a login button that does not work yet — that is correct at this point.
 GitHub → **Settings → Developer settings → OAuth Apps → New OAuth App**:
 
 - Application name: `Chuongk48 CMS`
-- Homepage URL: `https://<project>.pages.dev`
+- Homepage URL: `https://labcos-web.pages.dev`
 - Authorization callback URL: a placeholder — the real Worker subdomain is
   not known until Step 5, but GitHub validates this field and rejects
   anything that isn't a parseable URL, so `<your-subdomain>` literally typed
@@ -90,7 +96,7 @@ Edit `worker/wrangler.toml` with the real values:
 ```toml
 [vars]
 GITHUB_CLIENT_ID = "<the client id from step 4>"
-SITE_ORIGIN = "https://<project>.pages.dev"
+SITE_ORIGIN = "https://labcos-web.pages.dev"
 ```
 
 **`SITE_ORIGIN` must be scheme + host with no trailing slash — see the
@@ -146,7 +152,7 @@ In `hugo.toml`, set the real `baseURL` (this makes canonical and OpenGraph
 URLs correct):
 
 ```toml
-baseURL = "https://<project>.pages.dev/"
+baseURL = "https://labcos-web.pages.dev/"
 ```
 
 ## 9. Run the tests, then commit and push
@@ -162,7 +168,7 @@ git push
 
 Wait for the Pages deploy, then in a browser:
 
-1. Open `https://<project>.pages.dev/admin/`
+1. Open `https://labcos-web.pages.dev/admin/`
 2. Click **Login with GitHub** — a popup opens
 3. Authorize the app; the popup closes and the CMS loads
 4. Edit Demo Project's summary and publish
@@ -204,20 +210,23 @@ images in practice, not just in config.
 ## Placeholder inventory
 
 Every placeholder below must be replaced before the corresponding step will
-work. (Confirmed present as of this writing via
-`grep -rn "PLACEHOLDER" static/admin/config.yml worker/wrangler.toml`.)
+work. In this repository they have already been filled in with real values —
+the table is kept as a map of which file holds what, and as the checklist to
+re-run if the site is ever redeployed from scratch. Verify with
+`grep -rn "PLACEHOLDER" static/admin/config.yml worker/wrangler.toml`, which
+should now return nothing.
 
 | File | Line | Placeholder | Replace with |
 |---|---|---|---|
 | `worker/wrangler.toml` | 6 | `GITHUB_CLIENT_ID = "PLACEHOLDER_CLIENT_ID"` | The Client ID from the GitHub OAuth App (Step 4) |
-| `worker/wrangler.toml` | 7 | `SITE_ORIGIN = "https://PLACEHOLDER.pages.dev"` | The real Cloudflare Pages origin, e.g. `https://<project>.pages.dev` — scheme + host, no trailing slash (see warning below) |
+| `worker/wrangler.toml` | 7 | `SITE_ORIGIN = "https://PLACEHOLDER.pages.dev"` | The real Cloudflare Pages origin, e.g. `https://labcos-web.pages.dev` — scheme + host, no trailing slash (see warning below) |
 | `static/admin/config.yml` | 5 | `base_url: https://PLACEHOLDER_WORKER.workers.dev` | The deployed Worker URL, e.g. `https://<worker>.<subdomain>.workers.dev` |
 
-Also update, though these are not literal `PLACEHOLDER` strings:
+Also update, though this is not a literal `PLACEHOLDER` string:
 
-| File | Line | Current value | Replace with |
+| File | Line | Setting | Value |
 |---|---|---|---|
-| `hugo.toml` | 1 | `baseURL = "https://example.com/"` | `baseURL = "https://<project>.pages.dev/"` |
+| `hugo.toml` | 1 | `baseURL` | `https://labcos-web.pages.dev/` — with the trailing slash, unlike `SITE_ORIGIN` |
 
 The GitHub Client Secret is not a file placeholder at all — it is set once,
 directly into Cloudflare's secret store, via `npx wrangler secret put
@@ -274,3 +283,39 @@ rather than failing silently. But be aware of two sharp edges in that check:
 If OAuth login's popup silently closes with nothing happening (Step 10),
 this mismatch is the most common cause — check the browser console on
 `/admin` for a `postMessage` origin mismatch before looking anywhere else.
+
+---
+
+## Changing the pages.dev hostname later
+
+A `*.pages.dev` hostname is derived from the Pages project's name, and
+**Cloudflare Pages projects cannot be renamed**. Moving from
+`https://old-name.pages.dev` to `https://new-name.pages.dev` therefore means
+creating a second project and retiring the first:
+
+1. Create a new Pages project named `new-name`, connected to the same GitHub
+   repository, with the identical build settings from Step 2. Wait for its
+   first deploy and check `curl -sSI https://new-name.pages.dev/ | head -1`
+   returns `HTTP/2 200`.
+2. Update the two files that name the origin:
+   - `hugo.toml` — `baseURL = "https://new-name.pages.dev/"` (trailing slash)
+   - `worker/wrangler.toml` — `SITE_ORIGIN = "https://new-name.pages.dev"`
+     (**no** trailing slash)
+3. Redeploy the Worker — `cd worker && npx wrangler deploy`. Until this runs,
+   `SITE_ORIGIN` in Cloudflare still holds the old value and CMS login on the
+   new hostname fails at `/callback`, per the warning above. Editing
+   `wrangler.toml` alone changes nothing in production.
+4. Commit and push, so Pages rebuilds with the corrected `baseURL`.
+5. Update the GitHub OAuth App's **Homepage URL** to the new origin. Its
+   **Authorization callback URL** does *not* change — that points at the
+   Worker, not at the site.
+6. Verify login end to end at `https://new-name.pages.dev/admin/`, then delete
+   the old Pages project.
+
+Do steps 1 and 2 in that order. Pushing a `baseURL` for a hostname that does
+not exist yet makes the still-live old site emit canonical and OpenGraph URLs
+pointing at nothing.
+
+No other file in the repository hardcodes the site origin — `worker/test/`
+uses a fixture value (`https://example.pages.dev`) that is deliberately
+independent of the real one and must not be updated.
