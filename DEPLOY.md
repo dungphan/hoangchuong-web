@@ -64,12 +64,16 @@ deploy:
 
 ```bash
 curl -sSI https://labcos-web.pages.dev/ | head -1
-curl -sS https://labcos-web.pages.dev/projects/ | grep -o "Demo Project" | head -1
+curl -sS https://labcos-web.pages.dev/san-pham/ | grep -o "Sản phẩm — HDPLAS" | head -1
 curl -sSI https://labcos-web.pages.dev/admin/ | head -1
 ```
 
-Expected: `HTTP/2 200`, `Demo Project`, `HTTP/2 200`. The admin page will
+Expected: `HTTP/2 200`, `Sản phẩm — HDPLAS`, `HTTP/2 200`. The admin page will
 render a login button that does not work yet — that is correct at this point.
+
+The catalogue lives at `/san-pham/`, not `/projects/` — the redesign replaced
+the English `projects` section with the Vietnamese `san-pham` one, and
+`/projects/` now returns 404.
 
 ## 4. Create the GitHub OAuth App
 
@@ -171,7 +175,8 @@ Wait for the Pages deploy, then in a browser:
 1. Open `https://labcos-web.pages.dev/admin/`
 2. Click **Login with GitHub** — a popup opens
 3. Authorize the app; the popup closes and the CMS loads
-4. Edit Demo Project's summary and publish
+4. Open the **Sản phẩm** collection, edit any product's **Mô tả ngắn**
+   (summary), and publish
 5. Confirm a new commit appears: `git fetch && git log origin/main --oneline -1`
 6. Confirm the Pages build triggers and the change is live within ~60 seconds
 
@@ -194,10 +199,10 @@ A human must additionally, against the live site (or `npm run dev` +
 `npm run cms` locally):
 
 1. Open `/admin/` in a browser.
-2. Create a new Projects entry through the CMS UI.
-3. Upload an image via the **Cover image** field.
+2. Create a new **Sản phẩm** entry through the CMS UI.
+3. Upload an image via the **Ảnh chính** (cover) field.
 4. Save/publish, then confirm on disk (or via `git log` / the repo tree)
-   that a page bundle was created at `content/projects/<slug>/index.md`
+   that a page bundle was created at `content/san-pham/<slug>/index.md`
    with the uploaded image file sitting beside `index.md` in the same
    directory — not in a shared `static/images/uploads/` folder.
 
